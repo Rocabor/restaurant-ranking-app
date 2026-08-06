@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "./tokens.css";
+@import 'tailwindcss';
+@import './tokens.css';
 
 /* Expose the token values as Tailwind theme variables so you can use
    utilities like bg-surface, text-primary, rounded-xl, font-display, etc.
@@ -45,8 +45,8 @@
 }
 
 @theme {
-  --font-display: "Bespoke Serif", Georgia, "Times New Roman", serif;
-  --font-body: "Switzer", system-ui, -apple-system, sans-serif;
+  --font-display: 'Bespoke Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Switzer', system-ui, -apple-system, sans-serif;
 
   --text-xs: 0.6875rem;
   --text-xs--line-height: 1.4;

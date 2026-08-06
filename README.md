@@ -2,7 +2,7 @@
 
 Your definitive map of where to eat — a personal, honestly-ranked record of every place you've been and every place you still want to try.
 
-![Preview of Tastemap](./preview.jpg)
+![Preview of Tastemap](/public/preview.jpg)
 
 *This is a design concept image, not the intended design. There's no Figma file — you make the design decisions.*
 
