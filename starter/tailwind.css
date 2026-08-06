@@ -1,0 +1,85 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Expose the token values as Tailwind theme variables so you can use
+   utilities like bg-surface, text-primary, rounded-xl, font-display, etc.
+   Tailwind v4. If you're not using Tailwind, delete this file and use
+   tokens.css directly. */
+
+@theme inline {
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-secondary: var(--color-bg-secondary);
+  --color-bg-tertiary: var(--color-bg-tertiary);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-subtle: var(--color-primary-subtle);
+  --color-on-primary: var(--color-on-primary);
+  --color-highlight: var(--color-highlight);
+  --color-highlight-strong: var(--color-highlight-strong);
+  --color-positive: var(--color-positive);
+  --color-danger: var(--color-danger);
+
+  --color-cuisine-british: var(--cuisine-british);
+  --color-cuisine-spanish: var(--cuisine-spanish);
+  --color-cuisine-italian: var(--cuisine-italian);
+  --color-cuisine-european: var(--cuisine-european);
+  --color-cuisine-thai: var(--cuisine-thai);
+  --color-cuisine-indian: var(--cuisine-indian);
+  --color-cuisine-easian: var(--cuisine-easian);
+  --color-cuisine-mideast: var(--cuisine-mideast);
+  --color-cuisine-african: var(--cuisine-african);
+  --color-cuisine-seafood: var(--cuisine-seafood);
+  --color-cuisine-other: var(--cuisine-other);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+}
+
+@theme {
+  --font-display: "Bespoke Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Switzer", system-ui, -apple-system, sans-serif;
+
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.35;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.15;
+  --text-2xl: 2rem;
+  --text-2xl--line-height: 1.05;
+  --text-3xl: 2.75rem;
+  --text-3xl--line-height: 1;
+  --text-rank: 1.75rem;
+  --text-rank--line-height: 1;
+
+  --font-weight-regular: var(--font-regular);
+  --font-weight-medium: var(--font-medium);
+  --font-weight-semibold: var(--font-semibold);
+  --font-weight-bold: var(--font-bold);
+
+  --spacing: 0.25rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-full: 9999rem;
+
+  --container-rail: 25.75rem;
+  --container-content: 72rem;
+  --container-sheet: 30rem;
+  --container-page: 80rem;
+}
