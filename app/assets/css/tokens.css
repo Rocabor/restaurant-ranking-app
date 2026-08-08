@@ -7,6 +7,21 @@
    single warm accent. See guidance/brand-kit.md for rationale.
    ============================================================ */
 
+   @font-face {
+    font-family: 'Bespoke Serif';
+    src: url('~/assets/fonts/BespokeSerif-Variable.ttf') format('truetype');
+    font-weight: 300-800;
+    font-style: normal;
+    font-display: swap;
+   }
+   @font-face {
+    font-family: 'Switzer';
+    src: url('~/assets/fonts/Switzer-Variable.ttf') format('truetype');
+    font-weight: 100-900;
+    font-style: normal;
+    font-display: swap;
+   }
+
 :root {
   /* Surfaces & neutrals (light) — tinted toward the green brand hue */
   --color-bg-primary: oklch(0.976 0.01 145);

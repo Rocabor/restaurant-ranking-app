@@ -1,11 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
-/* Expose the token values as Tailwind theme variables so you can use
-   utilities like bg-surface, text-primary, rounded-xl, font-display, etc.
-   Tailwind v4. If you're not using Tailwind, delete this file and use
-   tokens.css directly. */
-
 @theme inline {
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-secondary: var(--color-bg-secondary);
