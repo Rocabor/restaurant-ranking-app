@@ -1,4 +1,4 @@
-<!--* app\components\Navbar.vue  -->
+<!-- app/components/Navbar.vue -->
 
 <script setup lang="ts">
 import { usePlacesStore } from '../stores/places';
@@ -33,7 +33,7 @@ const ui = useUIStore();
           <h1 class="font-serif font-bold text-xl sm:text-2xl tracking-tight leading-none text-text-primary">
             Tastemap<span class="text-highlight">.</span>
           </h1>
-          <p class="hidden md:block text-[11px] text-text-tertiary font-medium">Tu mapa personal & ranking honesto</p>
+          <p class="text-[8px] md:text-[11px] text-text-tertiary font-medium">Your personal map & honest ranking</p>
         </div>
       </div>
 
@@ -43,7 +43,7 @@ const ui = useUIStore();
         <input
           v-model="ui.searchQuery"
           type="text"
-          placeholder="Buscar lugar, cocina, barrio..."
+          placeholder="Search place, cuisine, area..."
           class="w-full pl-9 pr-8 py-1.5 text-xs bg-bg-secondary border border-border rounded-full focus:outline-none focus:border-primary text-text-primary transition-all placeholder:text-text-tertiary" />
         <button
           v-if="ui.searchQuery"
@@ -58,29 +58,29 @@ const ui = useUIStore();
         <button
           @click="ui.openModal('decider')"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-bg-secondary hover:bg-bg-tertiary text-text-primary border border-border transition-all active:scale-95"
-          title="Ayuda para decidir dónde comer">
+          title="Help me decide where to eat">
           <Sparkles class="w-3.5 h-3.5 text-highlight-strong"/>
-          <span class="hidden sm:inline">¿Dónde comer?</span>
+          <span class="hidden sm:inline">Where to eat?</span>
         </button>
 
         <button
           @click="ui.openModal('stats')"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          title="Estadísticas de sabor">
+          title="Taste stats">
           <BarChart3 class="w-4 h-4" />
         </button>
 
         <button
           @click="ui.openModal('share')"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          title="Compartir o Exportar">
+          title="Share or Export">
           <Share2 class="w-4 h-4" />
         </button>
 
         <button
           @click="ui.toggleDarkMode()"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          :title="ui.isDarkMode ? 'Modo claro' : 'Modo oscuro'">
+          :title="ui.isDarkMode ? 'Light mode' : 'Dark mode'">
           <Sun v-if="ui.isDarkMode" class="w-4 h-4 text-highlight"/>
           <Moon v-else class="w-4 h-4" />
         </button>
@@ -93,7 +93,7 @@ const ui = useUIStore();
             <span class="max-w-25 truncate text-text-primary text-[11px] hidden sm:inline">
               {{ ui.currentUser.email.split('@')[0] }}
             </span>
-            <button @click="ui.logoutUser()" class="p-1 flex hover:text-red-500 text-text-tertiary transition-colors" title="Cerrar sesión">
+            <button @click="ui.logoutUser()" class="p-1 flex hover:text-red-500 text-text-tertiary transition-colors" title="Log out">
               <LogOut class="w-3.5 h-3.5" />
             </button>
           </div>
@@ -101,9 +101,9 @@ const ui = useUIStore();
             v-else
             @click="ui.openModal('auth')"
             class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-text-primary bg-bg-secondary hover:bg-bg-tertiary border border-border transition-all"
-            title="Iniciar sesión o crear cuenta">
+            title="Log in or create an account">
             <CircleUserRound class="w-5 h-5 text-primary" />
-            <span class="hidden sm:inline">Entrar</span>
+            <span class="hidden sm:inline">Log in</span>
           </button>
         </div>
 
@@ -111,7 +111,7 @@ const ui = useUIStore();
           @click="ui.openModal('addPlace')"
           class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary hover:bg-primary-hover text-on-primary shadow-sm transition-all active:scale-95 ml-1">
           <Plus class="w-4 h-4" />
-          <span>Añadir lugar</span>
+          <span>Add place</span>
         </button>
       </div>
 
@@ -140,7 +140,7 @@ const ui = useUIStore();
             ref="mobileSearchInput"
             v-model="ui.searchQuery"
             type="text"
-            placeholder="Buscar lugar, cocina, barrio..."
+            placeholder="Search place, cuisine, area..."
             class="w-full pl-9 pr-8 py-2 text-sm bg-bg-secondary border border-border rounded-full focus:outline-none focus:border-primary text-text-primary transition-all placeholder:text-text-tertiary" />
           <button
             v-if="ui.searchQuery"
@@ -152,7 +152,7 @@ const ui = useUIStore();
         <button
           @click="ui.closeModal()"
           class="text-sm font-medium text-text-secondary hover:text-text-primary">
-          Cancelar
+          Cancel
         </button>
       </div>
     </div>
@@ -174,21 +174,21 @@ const ui = useUIStore();
             @click="ui.openModal('decider'); ui.closeMenu()"
             class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
             <Sparkles class="w-5 h-5 text-highlight-strong"/>
-            <span>¿Dónde comer?</span>
+            <span>Where to eat?</span>
           </button>
 
           <button
             @click="ui.openModal('stats'); ui.closeMenu()"
             class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
             <BarChart3 class="w-5 h-5 text-text-secondary"/>
-            <span>Estadísticas</span>
+            <span>Stats</span>
           </button>
 
           <button
             @click="ui.openModal('share'); ui.closeMenu()"
             class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
             <Share2 class="w-5 h-5 text-text-secondary"/>
-            <span>Compartir</span>
+            <span>Share</span>
           </button>
 
           <button
@@ -196,7 +196,7 @@ const ui = useUIStore();
             class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
             <Sun v-if="ui.isDarkMode" class="w-5 h-5 text-highlight"/>
             <Moon v-else class="w-5 h-5 text-text-secondary"/>
-            <span>{{ ui.isDarkMode ? 'Modo claro' : 'Modo oscuro' }}</span>
+            <span>{{ ui.isDarkMode ? 'Light mode' : 'Dark mode' }}</span>
           </button>
 
           <div class="border-t border-border my-1"></div>
@@ -220,7 +220,7 @@ const ui = useUIStore();
             @click="ui.openModal('auth'); ui.closeMenu()"
             class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
             <CircleUserRound class="w-5 h-5 text-primary"/>
-            <span>Iniciar sesión</span>
+            <span>Log in</span>
           </button>
 
           <div class="border-t border-border my-1"></div>
@@ -229,7 +229,7 @@ const ui = useUIStore();
             @click="ui.openModal('addPlace'); ui.closeMenu()"
             class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-primary hover:bg-primary-hover text-on-primary transition-colors">
             <Plus class="w-4 h-4" />
-            <span>Añadir lugar</span>
+            <span>Add place</span>
           </button>
 
         </div>
