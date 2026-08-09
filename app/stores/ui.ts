@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia';
 
-type ModalType = 'decider' | 'stats' | 'share' | 'auth' | 'addPlace' | 'editPlace' | 'duel' | 'search' | null;
+type ModalType = 'decider' | 'stats' | 'share' | 'auth' | 'addPlace' | 'editPlace' | 'duel' | 'search' | 'confirm' | null;
+
+interface ConfirmModalData {
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'danger' | 'warning';
+  onConfirm?: () => void;
+}
 
 interface UIState {
   searchQuery: string;
@@ -11,6 +20,7 @@ interface UIState {
   isRailOpen: boolean;
   showDetailSheet: boolean;
   showLanding: boolean;
+  confirmData: ConfirmModalData | null;
 }
 
 export const useUIStore = defineStore('ui', {
@@ -23,6 +33,7 @@ export const useUIStore = defineStore('ui', {
     isRailOpen: false,
     showDetailSheet: false,
     showLanding: true,
+    confirmData: null,
   }),
 
   actions: {
@@ -89,6 +100,16 @@ export const useUIStore = defineStore('ui', {
 
     hideLanding() {
       this.showLanding = false;
+    },
+
+    showConfirm(data: ConfirmModalData) {
+      this.confirmData = data;
+      this.activeModal = 'confirm';
+    },
+
+    closeConfirm() {
+      this.confirmData = null;
+      this.activeModal = null;
     },
   },
 });

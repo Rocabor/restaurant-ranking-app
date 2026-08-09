@@ -53,5 +53,6 @@ onMounted(() => {
     <AuthModal />
     <PlaceFormModal />
     <ComparisonDuelModal />
+    <ConfirmModal />
   </div>
 </template>

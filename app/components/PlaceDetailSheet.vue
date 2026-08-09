@@ -69,9 +69,18 @@ function openEdit() {
 }
 
 function confirmDelete() {
-  if (place.value && confirm(`Are you sure you want to delete "${place.value.name}"?`)) {
-    store.removePlace(place.value.id);
-    ui.closeDetailSheet();
+  if (place.value) {
+    ui.showConfirm({
+      title: 'Delete place',
+      message: `Are you sure you want to delete "${place.value.name}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+      onConfirm: () => {
+        store.removePlace(place.value!.id);
+        ui.closeDetailSheet();
+      },
+    });
   }
 }
 </script>

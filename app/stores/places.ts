@@ -140,14 +140,19 @@ export const usePlacesStore = defineStore('places', {
 
   actions: {
     loadData() {
-      const result = PlaceSchema.safeParse(sampleData);
-      if (result.success) {
-        this.meta = result.data.meta;
-        this.places = result.data.places;
-        this.comparisons = result.data.comparisons;
-      } else {
-        console.error('Invalid sample data:', result.error);
-      }
+      this.loading = true;
+      // Simulate async load for demo
+      setTimeout(() => {
+        const result = PlaceSchema.safeParse(sampleData);
+        if (result.success) {
+          this.meta = result.data.meta;
+          this.places = result.data.places;
+          this.comparisons = result.data.comparisons;
+        } else {
+          console.error('Invalid sample data:', result.error);
+        }
+        this.loading = false;
+      }, 500);
     },
 
     addPlace(place: Place) {

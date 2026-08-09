@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import PlaceCard from './PlaceCard.vue';
+import LoadingSkeleton from './LoadingSkeleton.vue';
 import { Utensils, X } from '@lucide/vue';
 
 const store = usePlacesStore();
@@ -181,44 +182,49 @@ const hasActiveFilters = computed(() => {
     <!-- Scrollable Cards List -->
     <div class="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin">
 
-      <!-- Active Filter Pill Bar (if filtering) -->
-      <div v-if="hasActiveFilters" class="flex items-center justify-between bg-bg-secondary border border-border rounded-xl px-3 py-1.5 text-xs text-text-secondary">
-        <span>
-          Showing {{ store.filteredPlaces.length }} of {{ store.places.length }} places
-        </span>
-        <button
-          @click="store.clearFilters()"
-          class="text-primary font-semibold hover:underline"
-        >
-          Clear filters
-        </button>
-      </div>
+      <!-- Loading State -->
+      <LoadingSkeleton v-if="store.loading" :count="5" />
 
-      <!-- Empty State -->
-      <div v-if="store.filteredPlaces.length === 0" class="text-center py-12 px-4 space-y-3">
-        <div class="w-12 h-12 rounded-full bg-bg-secondary text-text-tertiary flex items-center justify-center mx-auto">
-          <Utensils class="w-6 h-6" />
+      <template v-else>
+        <!-- Active Filter Pill Bar (if filtering) -->
+        <div v-if="hasActiveFilters" class="flex items-center justify-between bg-bg-secondary border border-border rounded-xl px-3 py-1.5 text-xs text-text-secondary">
+          <span>
+            Showing {{ store.filteredPlaces.length }} of {{ store.places.length }} places
+          </span>
+          <button
+            @click="store.clearFilters()"
+            class="text-primary font-semibold hover:underline"
+          >
+            Clear filters
+          </button>
         </div>
-        <h3 class="font-serif font-bold text-lg text-text-primary">
-          No matching places
-        </h3>
-        <p class="text-xs text-text-tertiary max-w-xs mx-auto">
-          Try changing your search or removing the applied filters.
-        </p>
-        <button
-          @click="store.clearFilters()"
-          class="px-4 py-1.5 rounded-full text-xs font-semibold bg-primary text-white hover:bg-primary-hover transition-all shadow-sm"
-        >
-          Reset filters
-        </button>
-      </div>
 
-      <!-- List Cards -->
-      <PlaceCard
-        v-for="place in store.filteredPlaces"
-        :key="place.id"
-        :place="place"
-      />
+        <!-- Empty State -->
+        <div v-if="store.filteredPlaces.length === 0" class="text-center py-12 px-4 space-y-3">
+          <div class="w-12 h-12 rounded-full bg-bg-secondary text-text-tertiary flex items-center justify-center mx-auto">
+            <Utensils class="w-6 h-6" />
+          </div>
+          <h3 class="font-serif font-bold text-lg text-text-primary">
+            No matching places
+          </h3>
+          <p class="text-xs text-text-tertiary max-w-xs mx-auto">
+            Try changing your search or removing the applied filters.
+          </p>
+          <button
+            @click="store.clearFilters()"
+            class="px-4 py-1.5 rounded-full text-xs font-semibold bg-primary text-white hover:bg-primary-hover transition-all shadow-sm"
+          >
+            Reset filters
+          </button>
+        </div>
+
+        <!-- List Cards -->
+        <PlaceCard
+          v-for="place in store.filteredPlaces"
+          :key="place.id"
+          :place="place"
+        />
+      </template>
 
     </div>
 

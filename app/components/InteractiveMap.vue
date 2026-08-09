@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import L from 'leaflet';
-import { Compass, Navigation, Share2 } from '@lucide/vue';
+import { Compass, Navigation, Share2, MapPin } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -270,6 +270,30 @@ function locateUser() {
 <template>
   <div class="relative w-full h-full min-h-87.5 bg-gray-100 dark:bg-gray-800 overflow-hidden">
     <div ref="mapContainer" class="w-full h-full z-10"></div>
+
+    <!-- Empty State Overlay -->
+    <div
+      v-if="store.places.length === 0"
+      class="absolute inset-0 z-30 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
+    >
+      <div class="text-center space-y-4 px-6">
+        <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto">
+          <MapPin class="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <h3 class="font-serif font-bold text-xl text-gray-900 dark:text-gray-100">
+          Your map is empty
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+          Add your first place to start mapping your taste and building honest rankings.
+        </p>
+        <button
+          @click="ui.openModal('addPlace')"
+          class="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl active:scale-95"
+        >
+          Add your first place
+        </button>
+      </div>
+    </div>
 
     <div class="absolute top-4 right-4 z-20 flex flex-col gap-2">
       <button
