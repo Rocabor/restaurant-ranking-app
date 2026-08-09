@@ -34,10 +34,11 @@ onMounted(() => {
     </button>
 
     <RankedListRail />
-    <main class="flex-1 bg-bg-primary">
+    <main class="flex-1 bg-bg-primary relative">
       <ClientOnly>
         <InteractiveMap />
       </ClientOnly>
+      <PlaceDetailSheet />
     </main>
   </div>
   <ShareModal />
@@ -45,4 +46,5 @@ onMounted(() => {
   <DeciderModal />
   <AuthModal />
   <PlaceFormModal />
+  <ComparisonDuelModal />
 </template>

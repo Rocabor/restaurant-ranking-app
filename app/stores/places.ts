@@ -20,6 +20,9 @@ interface PlacesState {
   selectedPlaceId: string | null;
   hoveredPlaceId: string | null;
   editingPlace: Place | null;
+  duelPlace: string | Place | null;
+  currentOpponent: Place | null;
+  duelProgress: number;
 }
 
 export const usePlacesStore = defineStore('places', {
@@ -37,6 +40,9 @@ export const usePlacesStore = defineStore('places', {
     selectedPlaceId: null,
     hoveredPlaceId: null,
     editingPlace: null,
+    duelPlace: null,
+    currentOpponent: null,
+    duelProgress: 0,
   }),
 
   getters: {
@@ -48,6 +54,8 @@ export const usePlacesStore = defineStore('places', {
     wantToTry: (state) => state.places.filter((p) => p.status === 'want'),
 
     getPlaceById: (state) => (id: string) => state.places.find((p) => p.id === id),
+
+    selectedPlace: (state) => state.places.find((p) => p.id === state.selectedPlaceId) || null,
 
     totalVisits: (state) => state.places.reduce((sum, p) => sum + p.visits, 0),
 
@@ -171,6 +179,59 @@ export const usePlacesStore = defineStore('places', {
 
     setHoveredPlace(id: string | null) {
       this.hoveredPlaceId = id;
+    },
+
+    togglePlaceStatus(id: string) {
+      const place = this.places.find(p => p.id === id);
+      if (!place) return;
+
+      if (place.status === 'want') {
+        place.status = 'ranked';
+        place.visits = 1;
+        place.rank = this.places.filter(p => p.status === 'ranked').length + 1;
+      } else {
+        place.status = 'want';
+        place.rank = null;
+        place.visits = 0;
+      }
+    },
+
+    startDuel(placeId: string) {
+      this.duelPlace = placeId;
+      const place = this.places.find(p => p.id === placeId);
+      if (!place) return;
+
+      const candidates = this.places.filter(p => p.id !== placeId);
+      if (candidates.length === 0) return;
+
+      const opponent = candidates[Math.floor(Math.random() * candidates.length)];
+      this.currentOpponent = opponent;
+      this.duelProgress = 0;
+    },
+
+    handleDuelChoice(choice: 'A' | 'B' | 'tie') {
+      if (!this.duelPlace || !this.currentOpponent) return;
+
+      const placeA = typeof this.duelPlace === 'string'
+        ? this.places.find(p => p.id === this.duelPlace)
+        : this.duelPlace;
+
+      if (!placeA) return;
+
+      const comparison: Comparison = {
+        aId: placeA.id,
+        bId: this.currentOpponent.id,
+        result: choice === 'tie' ? 'tie' : choice === 'A' ? 'a' : 'b',
+        date: new Date().toISOString()
+      };
+
+      this.comparisons.push(comparison);
+
+      const total = this.places.filter(p => p.status === 'ranked').length;
+      this.duelProgress = Math.min(100, Math.round((this.comparisons.length / Math.max(1, total)) * 100));
+
+      this.duelPlace = null;
+      this.currentOpponent = null;
     },
   },
 });
