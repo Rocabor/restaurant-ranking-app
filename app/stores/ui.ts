@@ -10,6 +10,7 @@ interface UIState {
   isMenuOpen: boolean;
   isRailOpen: boolean;
   showDetailSheet: boolean;
+  showLanding: boolean;
 }
 
 export const useUIStore = defineStore('ui', {
@@ -21,6 +22,7 @@ export const useUIStore = defineStore('ui', {
     isMenuOpen: false,
     isRailOpen: false,
     showDetailSheet: false,
+    showLanding: true,
   }),
 
   actions: {
@@ -83,6 +85,10 @@ export const useUIStore = defineStore('ui', {
     logoutUser() {
       this.currentUser = null;
       this.activeModal = null;
+    },
+
+    hideLanding() {
+      this.showLanding = false;
     },
   },
 });
