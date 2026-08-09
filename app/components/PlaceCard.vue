@@ -14,7 +14,7 @@
     <div class="flex items-start gap-3.5">
 
       <!-- Rank Numeral or Avatar -->
-      <div class="flex-shrink-0 flex flex-col items-center">
+      <div class="shrink-0 flex flex-col items-center">
         <!-- Ranked Numeral -->
         <div
           v-if="place.status === 'ranked' && place.rank !== null"
@@ -50,7 +50,7 @@
           </h3>
 
           <!-- Price Level -->
-          <span class="text-xs font-medium text-text-tertiary flex-shrink-0">
+          <span class="text-xs font-medium text-text-tertiary shrink-0">
             {{ getPriceGrapheme(place.priceLevel) }}
           </span>
         </div>
@@ -97,7 +97,7 @@
       </div>
 
       <!-- Action Arrow -->
-      <div class="flex-shrink-0 text-text-tertiary group-hover:text-primary transition-colors self-center">
+      <div class="shrink-0 text-text-tertiary group-hover:text-primary transition-colors self-center">
         <ChevronRight class="w-4 h-4" />
       </div>
 

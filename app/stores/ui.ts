@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-type ModalType = 'decider' | 'stats' | 'share' | 'auth' | 'addPlace' | 'search' | null;
+type ModalType = 'decider' | 'stats' | 'share' | 'auth' | 'addPlace' | 'editPlace' | 'search' | null;
 
 interface UIState {
   searchQuery: string;

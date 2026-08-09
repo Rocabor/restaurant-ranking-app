@@ -35,7 +35,9 @@ onMounted(() => {
 
     <RankedListRail />
     <main class="flex-1 bg-bg-primary">
-      <!-- Map will go here -->
+      <ClientOnly>
+        <InteractiveMap />
+      </ClientOnly>
     </main>
   </div>
   <ShareModal />

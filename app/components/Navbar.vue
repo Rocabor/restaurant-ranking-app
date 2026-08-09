@@ -1,4 +1,4 @@
-<!-- app/components/Navbar.vue -->
+<!--* app/components/Navbar.vue -->
 
 <script setup lang="ts">
 import { usePlacesStore } from '../stores/places';

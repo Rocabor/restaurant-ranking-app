@@ -1,3 +1,5 @@
+ <!--* app\components\PlaceFormModal.vue  -->
+
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
@@ -141,7 +143,7 @@ function mapCuisineToGroup(c: string): string {
     v-if="ui.activeModal === 'addPlace' || ui.activeModal === 'editPlace'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
   >
-    <div class="relative w-full max-w-xl max-h-[90vh] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-3xl p-6 shadow-2xl space-y-5 overflow-y-auto my-auto animate-fade-in">
+    <div class="relative w-full max-w-md max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
 
       <!-- Header -->
       <div class="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
@@ -171,7 +173,7 @@ function mapCuisineToGroup(c: string): string {
             type="button"
             @click="form.status = 'want'"
             class="py-2 rounded-xl transition-all flex items-center justify-center gap-1.5"
-            :class="form.status === 'want' ? 'bg-white dark:bg-gray-900 text-rose-600 dark:text-rose-400 shadow-sm' : 'text-gray-400'"
+            :class="form.status === 'want' ? 'bg-white dark:bg-gray-900 text-highlight dark:text-highlight-strong shadow-sm' : 'text-gray-400'"
           >
             <span>★ Want to try</span>
           </button>

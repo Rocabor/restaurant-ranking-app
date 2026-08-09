@@ -6,12 +6,17 @@
 
 @layer base {
   body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    background-color: #fafaf9;
+    color: #1c1917;
     font-family: var(--font-body);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+  }
+
+  .dark body {
+    background-color: #0c0a09;
+    color: #fafaf9;
   }
 
   .font-display {
@@ -19,8 +24,22 @@
   }
 }
 
-/* Pines personalizados para Leaflet */
-.tm-map-pin-inner {
+/* Leaflet Map Pins */
+.tastemap-marker-wrapper {
+  background: none !important;
+  border: none !important;
+}
+
+.tastemap-pin {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.tastemap-pin-inner {
   width: 32px;
   height: 32px;
   border-radius: 50% 50% 50% 4px;
@@ -30,22 +49,31 @@
   justify-content: center;
   border: 2px solid white;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.tm-map-pin-ranked .tm-map-pin-inner {
-  background-color: var(--color-primary);
-  color: white;
+.tastemap-pin-num {
+  transform: rotate(45deg);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
 }
 
-.tm-map-pin-want .tm-map-pin-inner {
-  background-color: var(--color-highlight);
-  color: white;
+.tastemap-pin-top .tastemap-pin-inner {
+  width: 36px;
+  height: 36px;
+  border-width: 3px;
+}
+
+.tastemap-marker-wrapper.is-active .tastemap-pin-inner {
+  transform: rotate(-45deg) scale(1.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
 /* Custom Scrollbar Styles */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
+  scrollbar-color: #e5e7eb transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -57,12 +85,24 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
+  background-color: #e5e7eb;
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-text-tertiary);
+  background-color: #9ca3af;
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: #374151 transparent;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #374151;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563;
 }
 
 .scrollbar-none {

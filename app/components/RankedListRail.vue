@@ -36,7 +36,7 @@ const hasActiveFilters = computed(() => {
       flex flex-col h-full bg-bg-primary border-r border-border
       fixed lg:relative z-50 lg:z-auto
       inset-y-0 left-0
-      w-[85vw] sm:w-[360px] lg:w-[340px] xl:w-[400px]
+      w-[85vw] sm:w-90 lg:w-85 xl:w-100
       transform transition-transform duration-300 ease-in-out
       lg:translate-x-0
       lg:transform-none
