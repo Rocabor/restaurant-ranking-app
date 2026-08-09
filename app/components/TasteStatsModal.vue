@@ -116,7 +116,7 @@ function filterByArea(areaName: string) {
     v-if="ui.activeModal === 'stats'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
   >
-    <div class="relative w-full max-w-xl max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-6 overflow-y-auto animate-fade-in my-auto">
+    <div class="relative w-full max-w-xl max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-6 overflow-y-auto scrollbar-thin animate-fade-in my-auto">
 
       <!-- Modal Header -->
       <div class="flex items-center justify-between pb-3 border-b border-border">

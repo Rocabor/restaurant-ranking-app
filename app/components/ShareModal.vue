@@ -144,7 +144,7 @@ function triggerNativeShare() {
     v-if="ui.activeModal === 'share'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
   >
-    <div class="relative w-full max-w-md max-h-[92vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 overflow-y-auto my-auto animate-fade-in">
+    <div class="relative w-full max-w-md max-h-[92vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
 
       <!-- Modal Header -->
       <div class="flex items-center justify-between pb-3 border-b border-border">

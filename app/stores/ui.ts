@@ -8,6 +8,7 @@ interface UIState {
   activeModal: ModalType;
   currentUser: { email: string } | null;
   isMenuOpen: boolean;
+  isRailOpen: boolean;
 }
 
 export const useUIStore = defineStore('ui', {
@@ -17,6 +18,7 @@ export const useUIStore = defineStore('ui', {
     activeModal: null,
     currentUser: null,
     isMenuOpen: false,
+    isRailOpen: false,
   }),
 
   actions: {
@@ -34,6 +36,14 @@ export const useUIStore = defineStore('ui', {
 
     closeMenu() {
       this.isMenuOpen = false;
+    },
+
+    toggleRail() {
+      this.isRailOpen = !this.isRailOpen;
+    },
+
+    closeRail() {
+      this.isRailOpen = false;
     },
 
     toggleDarkMode() {
