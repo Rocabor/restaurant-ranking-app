@@ -42,4 +42,5 @@ onMounted(() => {
   <TasteStatsModal />
   <DeciderModal />
   <AuthModal />
+  <PlaceFormModal />
 </template>

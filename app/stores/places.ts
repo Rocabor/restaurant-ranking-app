@@ -19,6 +19,7 @@ interface PlacesState {
   selectedTag: string | null;
   selectedPlaceId: string | null;
   hoveredPlaceId: string | null;
+  editingPlace: Place | null;
 }
 
 export const usePlacesStore = defineStore('places', {
@@ -35,6 +36,7 @@ export const usePlacesStore = defineStore('places', {
     selectedTag: null,
     selectedPlaceId: null,
     hoveredPlaceId: null,
+    editingPlace: null,
   }),
 
   getters: {
@@ -157,6 +159,14 @@ export const usePlacesStore = defineStore('places', {
 
     selectPlace(id: string) {
       this.selectedPlaceId = id;
+    },
+
+    startEditingPlace(place: Place) {
+      this.editingPlace = place;
+    },
+
+    clearEditingPlace() {
+      this.editingPlace = null;
     },
 
     setHoveredPlace(id: string | null) {
