@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUIStore } from '../stores/ui';
-import { MapPin, ListOrdered, BarChart3, Sparkles, ChevronRight, Star, Check } from '@lucide/vue';
+import { MapPin, ListOrdered, BarChart3, Sparkles, Star } from '@lucide/vue';
 
 const ui = useUIStore();
 
@@ -27,17 +27,8 @@ const features = [
   },
 ];
 
-const samplePlaces = [
-  { name: 'Brat', cuisine: 'Basque', rank: 1, type: 'ranked' as const },
-  { name: 'The Clove Club', cuisine: 'British', rank: 2, type: 'ranked' as const },
-  { name: 'Ikoyi', cuisine: 'West African', rank: 3, type: 'ranked' as const },
-  { name: 'Dishoom', cuisine: 'Indian', rank: null, type: 'want' as const },
-  { name: 'Padella', cuisine: 'Italian', rank: null, type: 'want' as const },
-];
-
 function handleSignIn() {
-  ui.hideLanding();
-  setTimeout(() => ui.openModal('auth'), 100);
+  ui.openModal('auth');
 }
 
 function handleTryAsGuest() {
@@ -74,9 +65,9 @@ function handleTryAsGuest() {
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-20 px-6">
-      <div class="max-w-6xl mx-auto text-center">
-        <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-semibold text-text-primary leading-tight mb-6">
+    <section class="pt-32 pb-12 px-6">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-text-primary leading-tight mb-6">
           Star ratings are useless.<br />
           <span class="text-primary">Rank where you actually eat.</span>
         </h1>
@@ -84,27 +75,27 @@ function handleTryAsGuest() {
           Tastemap is your personal map and honestly-ranked list of every place you've eaten — 
           and every place you still want to try.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             @click="handleSignIn"
-            class="px-8 py-4 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-all shadow-lg hover:shadow-xl active:scale-95"
+            class="px-6 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-all shadow-lg hover:shadow-xl active:scale-95"
           >
-            Get Started Free
+            Sign Up
           </button>
           <button
             @click="handleTryAsGuest"
-            class="px-8 py-4 bg-surface text-text-primary font-semibold rounded-full border border-border hover:border-primary transition-all active:scale-95"
+            class="px-6 py-3 bg-surface text-text-primary font-semibold rounded-full border border-border hover:border-primary transition-all active:scale-95"
           >
-            Try as Guest — No signup needed
+            Try as Guest
           </button>
         </div>
       </div>
     </section>
 
     <!-- Map Preview -->
-    <section class="px-6 pb-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-border bg-bg-secondary">
+    <section class="px-6 pb-12">
+      <div class="max-w-4xl mx-auto">
+        <div class="relative rounded-xl overflow-hidden shadow-xl border border-border bg-bg-secondary">
           <!-- Map Background Simulation -->
           <div class="aspect-[16/9] relative overflow-hidden">
             <!-- Simulated Map Grid -->
@@ -122,86 +113,47 @@ function handleTryAsGuest() {
             <!-- Simulated Map Pins -->
             <div class="absolute inset-0">
               <!-- Ranked Pins -->
-              <div class="absolute top-[20%] left-[15%] group cursor-pointer">
-                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg transform hover:scale-110 transition-transform">
+              <div class="absolute top-[25%] left-[20%] group cursor-pointer">
+                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg transform hover:scale-110 transition-transform">
                   1
                 </div>
-                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-primary rounded-full opacity-30 animate-ping"></div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-md text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                   Brat — #1
                 </div>
               </div>
 
-              <div class="absolute top-[35%] left-[30%] group cursor-pointer">
-                <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg transform hover:scale-110 transition-transform">
+              <div class="absolute top-[35%] right-[30%] group cursor-pointer">
+                <div class="w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg transform hover:scale-110 transition-transform">
                   2
                 </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                  The Clove Club — #2
+                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-md text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                  Clove Club — #2
                 </div>
               </div>
 
-              <div class="absolute top-[25%] right-[25%] group cursor-pointer">
-                <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg transform hover:scale-110 transition-transform">
-                  3
+              <!-- Want to Try Pin -->
+              <div class="absolute bottom-[35%] right-[20%] group cursor-pointer">
+                <div class="w-7 h-7 bg-highlight rounded-full flex items-center justify-center text-white shadow-lg transform hover:scale-110 transition-transform">
+                  <Star class="w-3 h-3" fill="currentColor" />
                 </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                  Ikoyi — #3
-                </div>
-              </div>
-
-              <!-- Want to Try Pins -->
-              <div class="absolute bottom-[30%] left-[40%] group cursor-pointer">
-                <div class="w-8 h-8 bg-highlight rounded-full flex items-center justify-center text-white shadow-lg transform hover:scale-110 transition-transform">
-                  <Star class="w-4 h-4" fill="currentColor" />
-                </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-md text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                   Dishoom — Want to try
-                </div>
-              </div>
-
-              <div class="absolute bottom-[25%] right-[20%] group cursor-pointer">
-                <div class="w-8 h-8 bg-highlight rounded-full flex items-center justify-center text-white shadow-lg transform hover:scale-110 transition-transform">
-                  <Star class="w-4 h-4" fill="currentColor" />
-                </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                  Padella — Want to try
                 </div>
               </div>
             </div>
 
             <!-- Legend -->
-            <div class="absolute bottom-4 left-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-gray-200 dark:border-gray-700">
-              <p class="text-xs font-semibold text-gray-900 dark:text-gray-100 mb-2">Map Legend</p>
-              <div class="space-y-1.5">
-                <div class="flex items-center gap-2">
-                  <div class="w-5 h-5 bg-emerald-600 rounded-full flex items-center justify-center text-white text-[8px] font-bold">1</div>
-                  <span class="text-xs text-gray-600 dark:text-gray-400">Ranked places (with position)</span>
+            <div class="absolute bottom-3 left-3 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow border border-gray-200 dark:border-gray-700">
+              <div class="flex items-center gap-3 text-xs">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-4 h-4 bg-emerald-600 rounded-full flex items-center justify-center text-white text-[8px] font-bold">1</div>
+                  <span class="text-gray-600 dark:text-gray-400">Ranked</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <div class="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-white">
-                    <Star class="w-3 h-3" fill="currentColor" />
+                <div class="flex items-center gap-1.5">
+                  <div class="w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-white">
+                    <Star class="w-2.5 h-2.5" fill="currentColor" />
                   </div>
-                  <span class="text-xs text-gray-600 dark:text-gray-400">Want to try (not yet ranked)</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Interactive Demo Panel -->
-            <div class="absolute top-4 right-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-gray-200 dark:border-gray-700 w-64">
-              <p class="text-xs font-semibold text-gray-900 dark:text-gray-100 mb-3">Sample Ranked List</p>
-              <div class="space-y-2">
-                <div v-for="place in samplePlaces" :key="place.name" class="flex items-center gap-2 text-xs">
-                  <div 
-                    class="w-6 h-6 rounded-full flex items-center justify-center font-bold"
-                    :class="place.type === 'ranked' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
-                  >
-                    {{ place.rank || '★' }}
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-gray-900 dark:text-gray-100 truncate">{{ place.name }}</p>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400">{{ place.cuisine }}</p>
-                  </div>
+                  <span class="text-gray-600 dark:text-gray-400">Want to try</span>
                 </div>
               </div>
             </div>
@@ -293,31 +245,14 @@ function handleTryAsGuest() {
     </section>
 
     <!-- CTA -->
-    <section class="px-6 py-20">
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="font-display text-3xl md:text-4xl font-semibold text-text-primary mb-6">
+    <section class="px-6 py-16">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="font-display text-3xl font-semibold text-text-primary mb-4">
           Ready to map your taste?
         </h2>
-        <p class="text-lg text-text-secondary mb-8">
-          Join Tastemap and start building a ranking you actually trust.
+        <p class="text-sm text-text-secondary mb-6">
+          No credit card required. Guest data is session-based only.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            @click="handleSignIn"
-            class="px-8 py-4 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-all shadow-lg hover:shadow-xl active:scale-95 inline-flex items-center justify-center gap-2"
-          >
-            Get Started Free
-            <ChevronRight class="w-5 h-5" />
-          </button>
-          <button
-            @click="handleTryAsGuest"
-            class="px-8 py-4 bg-surface text-text-primary font-semibold rounded-full border border-border hover:border-primary transition-all active:scale-95 inline-flex items-center justify-center gap-2"
-          >
-            Try as Guest First
-            <MapPin class="w-5 h-5" />
-          </button>
-        </div>
-        <p class="text-xs text-text-tertiary mt-4">No credit card required. Guest data is session-based only.</p>
       </div>
     </section>
 
