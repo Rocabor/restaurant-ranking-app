@@ -27,7 +27,7 @@ const ui = useUIStore();
     <div class="max-w-350 mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
 
       <!-- Brand & Title -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" @click="ui.showLandingPage()">
         <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-lg shadow-sm"><UtensilsCrossed /></div>
         <div>
           <h1 class="font-serif font-bold text-xl sm:text-2xl tracking-tight leading-none text-text-primary">

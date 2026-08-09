@@ -102,6 +102,12 @@ export const useUIStore = defineStore('ui', {
       this.showLanding = false;
     },
 
+    showLandingPage() {
+      this.showLanding = true;
+      this.activeModal = null;
+      this.showDetailSheet = false;
+    },
+
     showConfirm(data: ConfirmModalData) {
       this.confirmData = data;
       this.activeModal = 'confirm';
