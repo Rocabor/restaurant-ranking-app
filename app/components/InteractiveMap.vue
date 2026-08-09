@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import L from 'leaflet';
-import { Compass, Navigation } from '@lucide/vue';
+import { Compass, Navigation, Share2 } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -20,11 +20,16 @@ const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStree
 
 if (typeof window !== 'undefined') {
   (window as any).tastemapOpenPlace = (id: string) => {
-    store.selectPlace(id);
+    store.selectedPlaceId = id;
+    ui.openDetailSheet();
   };
   (window as any).tastemapSharePlace = (id: string) => {
     store.selectedPlaceId = id;
     ui.openModal('share');
+  };
+  (window as any).tastemapStartDuel = (id: string) => {
+    store.startDuel(id);
+    ui.openModal('duel');
   };
 }
 
@@ -66,6 +71,7 @@ watch(() => ui.isDarkMode, (isDark) => {
     const tileUrl = isDark ? DARK_TILES : LIGHT_TILES;
     tileLayer = L.tileLayer(tileUrl, { attribution: ATTR, maxZoom: 19 }).addTo(map);
   }
+  updateMarkers();
 });
 
 watch(() => store.filteredPlaces, () => {
@@ -139,43 +145,62 @@ function updateMarkers() {
     const marker = L.marker(latLng, { icon: customIcon }).addTo(map!);
 
     const priceString = '£'.repeat(place.priceLevel);
+    const isDark = ui.isDarkMode;
+
+    const bg = isDark ? '#1c1917' : '#ffffff';
+    const bgSecondary = isDark ? '#292524' : '#f5f5f4';
+    const bgTertiary = isDark ? '#44403c' : '#e7e5e4';
+    const textPrimary = isDark ? '#fafaf9' : '#1c1917';
+    const textSecondary = isDark ? '#a8a29e' : '#57534e';
+    const textTertiary = isDark ? '#78716c' : '#a8a29e';
+    const border = isDark ? '#44403c' : '#e7e5e4';
+    const primary = isDark ? '#34d399' : '#059669';
+    const primaryHover = isDark ? '#6ee7b7' : '#047857';
+    const primaryBg = isDark ? 'rgba(52,211,153,0.15)' : 'rgba(5,150,105,0.08)';
+    const amber = isDark ? '#fbbf24' : '#d97706';
+    const amberBg = isDark ? 'rgba(251,191,36,0.15)' : 'rgba(217,119,6,0.08)';
+
     const popupHtml = `
-      <div class="p-3.5 space-y-2 text-xs min-w-[210px] max-w-[250px] font-sans">
-        <div class="flex items-center justify-between gap-2">
-          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-            isRanked
-              ? 'bg-emerald-600 text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-amber-600 border border-gray-200 dark:border-gray-700'
-          }">
-            ${isRanked ? `#${place.rank} in Ranking` : '★ Want to Try'}
+      <div style="padding:14px;min-width:220px;max-width:260px;font-family:'Switzer',system-ui,sans-serif;background:${bg};color:${textPrimary};border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,${isDark ? '0.5' : '0.12'});">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;${isRanked ? `background:${primary};color:#fff;` : `background:${amberBg};color:${amber};border:1px solid ${border};`}">
+            ${isRanked ? `#${place.rank} Ranked` : '★ Want to Try'}
           </span>
-          <span class="font-bold text-emerald-600 text-xs">${priceString}</span>
+          <span style="font-weight:700;font-size:12px;color:${primary};">${priceString}</span>
         </div>
 
-        <div>
-          <h4 class="font-serif font-bold text-sm text-gray-900 dark:text-gray-100 leading-tight">${place.name}</h4>
-          <p class="text-[11px] text-gray-400 dark:text-gray-500 font-medium mt-0.5">${place.cuisine} • ${place.area}</p>
+        <div style="margin-bottom:8px;">
+          <div style="font-family:'Bespoke Serif',Georgia,serif;font-weight:700;font-size:15px;line-height:1.2;color:${textPrimary};margin-bottom:2px;">${place.name}</div>
+          <div style="font-size:11px;color:${textSecondary};font-weight:500;">${place.cuisine} • ${place.area}</div>
         </div>
 
         ${place.specialty ? `
-          <div class="text-[11px] text-gray-500 dark:text-gray-400 italic bg-gray-50 dark:bg-gray-800 p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 line-clamp-2">
-            ⭐ "${place.specialty}"
+          <div style="padding:8px 10px;border-radius:10px;background:${bgSecondary};border:1px solid ${border};margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${textTertiary};margin-bottom:2px;">⭐ Signature Dish</div>
+            <div style="font-size:11px;color:${textSecondary};font-style:italic;line-height:1.4;">"${place.specialty}"</div>
           </div>
         ` : ''}
 
-        <div class="pt-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between gap-1.5">
-          <button
-            onclick="window.tastemapOpenPlace('${place.id}')"
-            class="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold text-center transition-all shadow-sm active:scale-95"
-          >
+        <div style="display:flex;gap:6px;padding-top:10px;border-top:1px solid ${border};">
+          <button onclick="window.tastemapOpenPlace('${place.id}')"
+            style="flex:1;padding:8px 10px;border-radius:10px;background:${primary};color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;box-shadow:0 2px 8px ${primary}33;"
+            onmouseover="this.style.background='${primaryHover}'"
+            onmouseout="this.style.background='${primary}'">
             View Details
           </button>
-          <button
-            onclick="window.tastemapSharePlace('${place.id}')"
-            class="py-1.5 px-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-gray-200 dark:border-gray-700 text-[11px] font-bold text-center transition-all active:scale-95"
-            title="Share on Social Media"
-          >
-            📲
+          <button onclick="window.tastemapSharePlace('${place.id}')"
+            style="padding:8px 10px;border-radius:10px;background:${primaryBg};color:${primary};border:1px solid ${border};font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;"
+            onmouseover="this.style.background='${primary}';this.style.color='#fff'"
+            onmouseout="this.style.background='${primaryBg}';this.style.color='${primary}'"
+            title="Share">
+            ➜          
+          </button>
+          <button onclick="window.tastemapStartDuel('${place.id}')"
+            style="padding:8px 10px;border-radius:10px;background:${bgSecondary};color:${textPrimary};border:1px solid ${border};font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;"
+            onmouseover="this.style.background='${bgTertiary}'"
+            onmouseout="this.style.background='${bgSecondary}'"
+            title="Compare in Duel">
+            ⚔️
           </button>
         </div>
       </div>
@@ -247,7 +272,7 @@ function locateUser() {
         class="w-9 h-9 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 shadow-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-all active:scale-95"
         title="View all places"
       >
-        <Compass class="w-4 h-4" />
+        <Compass class="w-4 h-4" />        
       </button>
 
       <button

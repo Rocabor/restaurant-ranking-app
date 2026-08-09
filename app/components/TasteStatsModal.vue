@@ -1,13 +1,16 @@
 <!--* app\components\TasteStatsModal.vue  -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { BarChart3, X, Trophy, Compass, Award } from '@lucide/vue';
+import { useConfetti } from '../composables/useConfetti';
 
 const store = usePlacesStore();
 const ui = useUIStore();
+const { fireBadgeConfetti } = useConfetti();
+const previousBadges = ref<boolean[]>([]);
 
 const topPick = computed(() => {
   return store.rankedPlaces.find(p => p.rank === 1) || null;
@@ -101,14 +104,26 @@ const badges = computed(() => {
 });
 
 function filterByCuisine(cuisineName: string) {
-  ui.searchQuery = cuisineName;
+  store.selectedCuisine = cuisineName;
+  store.selectedStatus = 'all';
   ui.closeModal();
 }
 
 function filterByArea(areaName: string) {
-  ui.searchQuery = areaName;
+  store.selectedArea = areaName;
+  store.selectedStatus = 'all';
   ui.closeModal();
 }
+
+watch(() => badges.value.map(b => b.unlocked), (newVal, oldVal) => {
+  if (oldVal && oldVal.length > 0) {
+    const newlyUnlocked = newVal.filter((v, i) => v && !oldVal[i]);
+    if (newlyUnlocked.length > 0) {
+      fireBadgeConfetti();
+    }
+  }
+  previousBadges.value = [...newVal];
+});
 </script>
 
 <template>
@@ -116,7 +131,7 @@ function filterByArea(areaName: string) {
     v-if="ui.activeModal === 'stats'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
   >
-    <div class="relative w-full max-w-xl max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-6 overflow-y-auto scrollbar-thin animate-fade-in my-auto">
+    <div class="relative w-full max-w-lg max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-6 overflow-y-auto scrollbar-thin animate-fade-in my-auto">
 
       <!-- Modal Header -->
       <div class="flex items-center justify-between pb-3 border-b border-border">

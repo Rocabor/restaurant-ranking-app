@@ -22,7 +22,9 @@ onMounted(() => {
 
 watch(() => ui.activeModal, (val) => {
   if (val === 'share') {
-    if (store.places.length > 0) {
+    if (store.selectedPlaceId) {
+      selectedPlaceId.value = store.selectedPlaceId;
+    } else if (store.places.length > 0) {
       selectedPlaceId.value = store.places[0]?.id ?? '';
     }
     notification.value = null;

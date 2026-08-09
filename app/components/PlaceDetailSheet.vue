@@ -3,11 +3,15 @@ import { computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { X, Trophy, Plus, MapPin, Globe, ExternalLink, Edit3, Trash2, CheckCircle2, Share2 } from '@lucide/vue';
+import { useConfetti } from '../composables/useConfetti';
 
 const store = usePlacesStore();
 const ui = useUIStore();
+const { fireConfetti, fireTopPickConfetti } = useConfetti();
 
 const place = computed(() => store.selectedPlace);
+
+const isVisible = computed(() => ui.showDetailSheet && place.value);
 
 function shareThisPlace() {
   if (place.value) {
@@ -43,6 +47,20 @@ function incrementVisit() {
   }
 }
 
+function markAsVisited() {
+  if (place.value) {
+    const wasWant = place.value.status === 'want';
+    store.togglePlaceStatus(place.value.id);
+    if (wasWant) {
+      fireConfetti();
+      const updatedPlace = store.places.find(p => p.id === place.value?.id);
+      if (updatedPlace?.rank === 1) {
+        setTimeout(() => fireTopPickConfetti(), 500);
+      }
+    }
+  }
+}
+
 function openEdit() {
   if (place.value) {
     store.startEditingPlace(place.value);
@@ -53,7 +71,7 @@ function openEdit() {
 function confirmDelete() {
   if (place.value && confirm(`Are you sure you want to delete "${place.value.name}"?`)) {
     store.removePlace(place.value.id);
-    store.selectPlace(null as any);
+    ui.closeDetailSheet();
   }
 }
 </script>
@@ -73,8 +91,8 @@ function confirmDelete() {
 <template>
   <Transition name="slide-fade">
     <div
-      v-if="place"
-      class="fixed inset-y-0 right-0 z-40 w-full sm:w-105 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden"
+      v-if="isVisible"
+      class="fixed inset-y-0 right-0 z-40 w-full sm:w-90 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden"
     >
       <!-- Header Bar -->
       <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
@@ -97,7 +115,7 @@ function confirmDelete() {
         </div>
 
         <button
-          @click="store.selectPlace(null as any)"
+          @click="ui.closeDetailSheet()"
           class="p-1.5 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-gray-100 dark:hover:bg-gray-800 transition-colors"
         >
           <X class="w-5 h-5" />
@@ -145,7 +163,7 @@ function confirmDelete() {
           <!-- If Want: Mark as Been & Rank -->
           <button
             v-if="place.status === 'want'"
-            @click="store.togglePlaceStatus(place.id)"
+            @click="markAsVisited"
             class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"
           >
             <CheckCircle2 class="w-4 h-4" />

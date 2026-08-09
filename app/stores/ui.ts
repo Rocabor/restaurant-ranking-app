@@ -9,6 +9,7 @@ interface UIState {
   currentUser: { email: string } | null;
   isMenuOpen: boolean;
   isRailOpen: boolean;
+  showDetailSheet: boolean;
 }
 
 export const useUIStore = defineStore('ui', {
@@ -19,9 +20,23 @@ export const useUIStore = defineStore('ui', {
     currentUser: null,
     isMenuOpen: false,
     isRailOpen: false,
+    showDetailSheet: false,
   }),
 
   actions: {
+    initDarkMode() {
+      if (typeof window === 'undefined') return;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedTheme = localStorage.getItem('tastemap-theme');
+      if (savedTheme) {
+        this.isDarkMode = savedTheme === 'dark';
+      } else {
+        this.isDarkMode = prefersDark;
+      }
+      document.documentElement.classList.toggle('dark', this.isDarkMode);
+      document.documentElement.setAttribute('data-theme', this.isDarkMode ? 'dark' : 'light');
+    },
+
     openModal(type: NonNullable<ModalType>) {
       this.activeModal = type;
     },
@@ -46,9 +61,19 @@ export const useUIStore = defineStore('ui', {
       this.isRailOpen = false;
     },
 
+    openDetailSheet() {
+      this.showDetailSheet = true;
+    },
+
+    closeDetailSheet() {
+      this.showDetailSheet = false;
+    },
+
     toggleDarkMode() {
       this.isDarkMode = !this.isDarkMode;
       document.documentElement.classList.toggle('dark', this.isDarkMode);
+      document.documentElement.setAttribute('data-theme', this.isDarkMode ? 'dark' : 'light');
+      localStorage.setItem('tastemap-theme', this.isDarkMode ? 'dark' : 'light');
     },
 
     setUser(user: { email: string } | null) {

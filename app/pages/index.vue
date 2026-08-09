@@ -9,6 +9,7 @@ const store = usePlacesStore();
 const ui = useUIStore();
 
 onMounted(() => {
+  ui.initDarkMode();
   store.loadData();
 });
 </script>

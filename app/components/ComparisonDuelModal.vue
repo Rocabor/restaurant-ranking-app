@@ -5,9 +5,11 @@ import { computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { Trophy, Scale, CheckCircle2 } from '@lucide/vue';
+import { useConfetti } from '../composables/useConfetti';
 
 const store = usePlacesStore();
 const ui = useUIStore();
+const { fireConfetti } = useConfetti();
 
 const duelPlaceObj = computed(() => {
   if (!store.duelPlace) return null;
@@ -22,15 +24,22 @@ function onKeyDown(e: KeyboardEvent) {
 
   if (e.key === '1' || e.key === 'ArrowLeft') {
     e.preventDefault();
-    store.handleDuelChoice('A');
+    handleChoice('A');
   } else if (e.key === '2' || e.key === 'ArrowRight') {
     e.preventDefault();
-    store.handleDuelChoice('B');
+    handleChoice('B');
   } else if (e.key === 't' || e.key === 'T' || e.key === ' ') {
     e.preventDefault();
-    store.handleDuelChoice('tie');
+    handleChoice('tie');
   } else if (e.key === 'Escape') {
     ui.closeModal();
+  }
+}
+
+function handleChoice(choice: 'A' | 'B' | 'tie') {
+  store.handleDuelChoice(choice);
+  if (choice !== 'tie') {
+    fireConfetti();
   }
 }
 </script>
@@ -41,7 +50,7 @@ function onKeyDown(e: KeyboardEvent) {
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     @keydown.window="onKeyDown"
   >
-    <div class="relative w-full max-w-3xl max-h-[92vh] bg-surface border border-border rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
+    <div class="relative w-full max-w-2xl max-h-[92vh] bg-surface border border-border rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
 
       <!-- Modal Header & Progress -->
       <div class="space-y-2 text-center">
@@ -76,7 +85,7 @@ function onKeyDown(e: KeyboardEvent) {
 
         <!-- OPTION A CARD -->
         <div
-          @click="store.handleDuelChoice('A')"
+          @click="handleChoice('A')"
           class="group relative bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-emerald-500 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between space-y-4 cursor-pointer"
         >
           <div class="space-y-3">
@@ -149,7 +158,7 @@ function onKeyDown(e: KeyboardEvent) {
           </div>
 
           <button
-            @click.stop="store.handleDuelChoice('A')"
+            @click.stop="handleChoice('A')"
             class="w-full py-2.5 rounded-xl text-xs font-bold text-center bg-emerald-600 text-white group-hover:bg-emerald-700 transition-all shadow-md active:scale-95 mt-auto flex items-center justify-center gap-2"
           >
             <span>Choose {{ duelPlaceObj.name }}</span>
@@ -159,7 +168,7 @@ function onKeyDown(e: KeyboardEvent) {
 
         <!-- OPTION B CARD -->
         <div
-          @click="store.handleDuelChoice('B')"
+          @click="handleChoice('B')"
           class="group relative bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-emerald-500 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between space-y-4 cursor-pointer"
         >
           <div class="space-y-3">
@@ -232,7 +241,7 @@ function onKeyDown(e: KeyboardEvent) {
           </div>
 
           <button
-            @click.stop="store.handleDuelChoice('B')"
+            @click.stop="handleChoice('B')"
             class="w-full py-2.5 rounded-xl text-xs font-bold text-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 group-hover:border-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-all shadow-md active:scale-95 mt-auto flex items-center justify-center gap-2"
           >
             <span>Choose {{ store.currentOpponent.name }}</span>
@@ -245,7 +254,7 @@ function onKeyDown(e: KeyboardEvent) {
       <!-- Tie & Cancel Controls -->
       <div class="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700 text-xs">
         <button
-          @click="store.handleDuelChoice('tie')"
+          @click="handleChoice('tie')"
           class="px-4 py-2 rounded-full font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-all flex items-center gap-2 active:scale-95"
           title="Shortcut: Key T or Space"
         >

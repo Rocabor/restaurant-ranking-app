@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
+@variant dark (&:is(.dark *));
+
 @theme inline {
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-secondary: var(--color-bg-secondary);
