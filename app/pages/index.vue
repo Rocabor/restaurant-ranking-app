@@ -15,4 +15,5 @@ onMounted(() => {
   <ShareModal />
   <TasteStatsModal />
   <DeciderModal />
+  <AuthModal />
 </template>
