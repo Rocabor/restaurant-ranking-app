@@ -40,7 +40,7 @@ onMounted(() => {
       </button>
 
       <RankedListRail />
-      <main class="flex-1 bg-bg-primary relative">
+      <main id="main-content" class="flex-1 bg-bg-primary relative" tabindex="-1">
         <ClientOnly>
           <InteractiveMap />
         </ClientOnly>

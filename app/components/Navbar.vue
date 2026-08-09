@@ -58,7 +58,8 @@ const ui = useUIStore();
         <button
           @click="ui.openModal('decider')"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-bg-secondary hover:bg-bg-tertiary text-text-primary border border-border transition-all active:scale-95"
-          title="Help me decide where to eat">
+          title="Help me decide where to eat"
+          aria-label="Help me decide where to eat">
           <Sparkles class="w-3.5 h-3.5 text-highlight-strong"/>
           <span class="hidden sm:inline">Where to eat?</span>
         </button>
@@ -66,14 +67,16 @@ const ui = useUIStore();
         <button
           @click="ui.openModal('stats')"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          title="Taste stats">
+          title="Taste stats"
+          aria-label="View taste statistics">
           <BarChart3 class="w-4 h-4" />
         </button>
 
         <button
           @click="ui.openModal('share')"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          title="Share or Export">
+          title="Share or Export"
+          aria-label="Share or export your map">
           <Share2 class="w-4 h-4" />
         </button>
 

@@ -1,17 +1,29 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { X, Trophy, Plus, MapPin, Globe, ExternalLink, Edit3, Trash2, CheckCircle2, Share2 } from '@lucide/vue';
 import { useConfetti } from '../composables/useConfetti';
+import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
 const { fireConfetti, fireTopPickConfetti } = useConfetti();
 
+const sheetRef = ref<HTMLElement | null>(null);
+const { activate, deactivate } = useFocusTrap(sheetRef);
+
 const place = computed(() => store.selectedPlace);
 
 const isVisible = computed(() => ui.showDetailSheet && place.value);
+
+watch(isVisible, (visible) => {
+  if (visible) {
+    activate();
+  } else {
+    deactivate();
+  }
+});
 
 function shareThisPlace() {
   if (place.value) {
@@ -101,7 +113,11 @@ function confirmDelete() {
   <Transition name="slide-fade">
     <div
       v-if="isVisible"
+      ref="sheetRef"
       class="fixed inset-y-0 right-0 z-40 w-full sm:w-90 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="place ? `Details for ${place.name}` : 'Place details'"
     >
       <!-- Header Bar -->
       <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">

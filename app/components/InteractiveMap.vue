@@ -169,7 +169,11 @@ function updateMarkers() {
       iconAnchor: [18, 36]
     });
 
-    const marker = L.marker(latLng, { icon: customIcon });
+    const marker = L.marker(latLng, { 
+      icon: customIcon,
+      keyboard: true,
+      title: `${place.name}, ${place.cuisine}, ${place.area}, ${place.status === 'ranked' ? `ranked #${place.rank}` : 'want to try'}`
+    });
 
     const priceString = '£'.repeat(place.priceLevel);
     const isDark = ui.isDarkMode;

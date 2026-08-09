@@ -223,3 +223,35 @@
 .dark .marker-cluster-large div {
   background: linear-gradient(135deg, #34d399, #10b981) !important;
 }
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .tastemap-marker-wrapper.is-active .tastemap-pin-inner {
+    transform: rotate(-45deg) scale(1.1);
+  }
+
+  .tastemap-marker-wrapper.is-active .tastemap-pin::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: none;
+  }
+
+  .slide-fade-enter-from,
+  .slide-fade-leave-to {
+    transform: none;
+    opacity: 1;
+  }
+}

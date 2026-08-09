@@ -1,15 +1,29 @@
 <!--* app\components\ComparisonDuelModal.vue  -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { Trophy, Scale, CheckCircle2 } from '@lucide/vue';
 import { useConfetti } from '../composables/useConfetti';
+import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
 const { fireConfetti } = useConfetti();
+
+const modalRef = ref<HTMLElement | null>(null);
+const { activate, deactivate } = useFocusTrap(modalRef);
+
+const isOpen = computed(() => ui.activeModal === 'duel' && store.binaryInsertion.isPlacing);
+
+watch(isOpen, (open) => {
+  if (open) {
+    activate();
+  } else {
+    deactivate();
+  }
+});
 
 const newPlace = computed(() => {
   if (!store.binaryInsertion.newPlaceId) return null;
@@ -61,8 +75,12 @@ function handleChoice(choice: 'new' | 'existing' | 'tie') {
 <template>
   <div
     v-if="ui.activeModal === 'duel' && store.binaryInsertion.isPlacing && newPlace && currentOpponent"
+    ref="modalRef"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     @keydown.window="onKeyDown"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="duel-title"
   >
     <div class="relative w-full max-w-2xl max-h-[92vh] bg-surface border border-border rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
 
@@ -73,7 +91,7 @@ function handleChoice(choice: 'new' | 'existing' | 'tie') {
           <span>Ranking • Binary Insertion</span>
         </div>
 
-        <h2 class="font-serif font-bold text-2xl text-gray-900 dark:text-gray-100">
+        <h2 id="duel-title" class="font-serif font-bold text-2xl text-gray-900 dark:text-gray-100">
           Which one do you prefer?
         </h2>
         <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">

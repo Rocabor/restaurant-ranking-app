@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useUIStore } from '../stores/ui';
 import { AlertTriangle } from '@lucide/vue';
+import { useFocusTrap } from '../composables/useFocusTrap';
 
 const ui = useUIStore();
 
 const confirmData = computed(() => ui.confirmData);
+const isOpen = computed(() => ui.activeModal === 'confirm');
+
+const modalRef = ref<HTMLElement | null>(null);
+const { activate, deactivate } = useFocusTrap(modalRef);
+
+watch(isOpen, (open) => {
+  if (open) {
+    activate();
+  } else {
+    deactivate();
+  }
+});
 
 function handleConfirm() {
   if (confirmData.value?.onConfirm) {
@@ -31,8 +44,13 @@ function onKeyDown(e: KeyboardEvent) {
 <template>
   <div
     v-if="ui.activeModal === 'confirm' && confirmData"
+    ref="modalRef"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     @keydown.window="onKeyDown"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="confirm-title"
+    aria-describedby="confirm-message"
   >
     <div class="relative w-full max-w-md bg-surface border border-border rounded-2xl p-6 shadow-2xl space-y-4">
       <!-- Icon -->
@@ -50,10 +68,10 @@ function onKeyDown(e: KeyboardEvent) {
 
       <!-- Content -->
       <div class="text-center space-y-2">
-        <h3 class="font-serif font-bold text-xl text-text-primary">
+        <h3 id="confirm-title" class="font-serif font-bold text-xl text-text-primary">
           {{ confirmData.title }}
         </h3>
-        <p class="text-sm text-text-secondary">
+        <p id="confirm-message" class="text-sm text-text-secondary">
           {{ confirmData.message }}
         </p>
       </div>

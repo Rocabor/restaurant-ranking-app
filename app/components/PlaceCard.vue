@@ -10,6 +10,11 @@
       isSelected ? 'border-primary ring-2 ring-primary/20 bg-primary/5' : 'border-border hover:border-border',
       isHovered ? 'border-primary' : ''
     ]"
+    role="button"
+    tabindex="0"
+    :aria-label="`${place.name}, ${place.cuisine}, ${place.area}, ${place.status === 'ranked' ? `ranked #${place.rank}` : 'want to try'}`"
+    @keydown.enter="store.selectPlace(place.id)"
+    @keydown.space.prevent="store.selectPlace(place.id)"
   >
     <div class="flex items-start gap-3.5">
 
