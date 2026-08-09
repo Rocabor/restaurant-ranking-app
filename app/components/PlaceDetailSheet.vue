@@ -50,7 +50,7 @@ function incrementVisit() {
 function markAsVisited() {
   if (place.value) {
     const wasWant = place.value.status === 'want';
-    store.togglePlaceStatus(place.value.id);
+    store.togglePlaceStatus(place.value.id, () => ui.openModal('duel'));
     if (wasWant) {
       fireConfetti();
       const updatedPlace = store.places.find(p => p.id === place.value?.id);

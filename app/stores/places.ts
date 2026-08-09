@@ -6,6 +6,17 @@ import sampleData from '../../data/sample-places.json';
 type Meta = FullPlaceJsonData['meta'];
 type SortOption = 'rank' | 'name' | 'dateAdded' | 'visits' | 'priceLevel';
 
+interface BinaryInsertionState {
+  isPlacing: boolean;
+  newPlaceId: string | null;
+  low: number;
+  high: number;
+  mid: number;
+  questionCount: number;
+  totalEstimate: number;
+  currentOpponentId: string | null;
+}
+
 interface PlacesState {
   meta: Meta | null;
   places: Place[];
@@ -20,9 +31,7 @@ interface PlacesState {
   selectedPlaceId: string | null;
   hoveredPlaceId: string | null;
   editingPlace: Place | null;
-  duelPlace: string | Place | null;
-  currentOpponent: Place | null;
-  duelProgress: number;
+  binaryInsertion: BinaryInsertionState;
 }
 
 export const usePlacesStore = defineStore('places', {
@@ -40,9 +49,16 @@ export const usePlacesStore = defineStore('places', {
     selectedPlaceId: null,
     hoveredPlaceId: null,
     editingPlace: null,
-    duelPlace: null,
-    currentOpponent: null,
-    duelProgress: 0,
+    binaryInsertion: {
+      isPlacing: false,
+      newPlaceId: null,
+      low: 0,
+      high: 0,
+      mid: 0,
+      questionCount: 0,
+      totalEstimate: 0,
+      currentOpponentId: null,
+    },
   }),
 
   getters: {
@@ -181,57 +197,144 @@ export const usePlacesStore = defineStore('places', {
       this.hoveredPlaceId = id;
     },
 
-    togglePlaceStatus(id: string) {
+    togglePlaceStatus(id: string, openDuelModal?: () => void) {
       const place = this.places.find(p => p.id === id);
       if (!place) return;
 
       if (place.status === 'want') {
         place.status = 'ranked';
         place.visits = 1;
-        place.rank = this.places.filter(p => p.status === 'ranked').length + 1;
+        this.startBinaryInsertion(id);
+        if (openDuelModal && this.rankedPlaces.length > 1) {
+          openDuelModal();
+        }
       } else {
         place.status = 'want';
         place.rank = null;
         place.visits = 0;
+        this.recalculateRanks();
       }
     },
 
-    startDuel(placeId: string) {
-      this.duelPlace = placeId;
-      const place = this.places.find(p => p.id === placeId);
-      if (!place) return;
+    startBinaryInsertion(newPlaceId: string) {
+      const rankedPlaces = this.rankedPlaces;
+      const n = rankedPlaces.length;
 
-      const candidates = this.places.filter(p => p.id !== placeId);
-      if (candidates.length === 0) return;
+      if (n === 0) {
+        const place = this.places.find(p => p.id === newPlaceId);
+        if (place) {
+          place.rank = 1;
+        }
+        return;
+      }
 
-      const opponent = candidates[Math.floor(Math.random() * candidates.length)];
-      this.currentOpponent = opponent;
-      this.duelProgress = 0;
+      if (n === 1) {
+        this.binaryInsertion = {
+          isPlacing: true,
+          newPlaceId,
+          low: 0,
+          high: 0,
+          mid: 0,
+          questionCount: 1,
+          totalEstimate: 1,
+          currentOpponentId: rankedPlaces[0].id,
+        };
+        return;
+      }
+
+      const totalEstimate = Math.ceil(Math.log2(n + 1));
+      const low = 0;
+      const high = n - 1;
+      const mid = Math.floor((low + high) / 2);
+
+      this.binaryInsertion = {
+        isPlacing: true,
+        newPlaceId,
+        low,
+        high,
+        mid,
+        questionCount: 1,
+        totalEstimate,
+        currentOpponentId: rankedPlaces[mid].id,
+      };
     },
 
-    handleDuelChoice(choice: 'A' | 'B' | 'tie') {
-      if (!this.duelPlace || !this.currentOpponent) return;
+    handleBinaryInsertionChoice(choice: 'new' | 'existing' | 'tie') {
+      const { newPlaceId, low, high, mid, questionCount } = this.binaryInsertion;
+      if (!newPlaceId) return;
 
-      const placeA = typeof this.duelPlace === 'string'
-        ? this.places.find(p => p.id === this.duelPlace)
-        : this.duelPlace;
-
-      if (!placeA) return;
+      const rankedPlaces = this.rankedPlaces;
+      const newPlace = this.places.find(p => p.id === newPlaceId);
+      if (!newPlace) return;
 
       const comparison: Comparison = {
-        aId: placeA.id,
-        bId: this.currentOpponent.id,
-        result: choice === 'tie' ? 'tie' : choice === 'A' ? 'a' : 'b',
+        aId: newPlaceId,
+        bId: rankedPlaces[mid].id,
+        result: choice === 'tie' ? 'tie' : choice === 'new' ? 'a' : 'b',
         date: new Date().toISOString()
       };
-
       this.comparisons.push(comparison);
 
-      const total = this.places.filter(p => p.status === 'ranked').length;
-      this.duelProgress = Math.min(100, Math.round((this.comparisons.length / Math.max(1, total)) * 100));
+      if (choice === 'tie') {
+        this.finishBinaryInsertion(newPlaceId, mid + 1);
+        return;
+      }
 
-      this.duelPlace = null;
-      this.currentOpponent = null;
+      if (choice === 'new') {
+        if (low >= mid) {
+          this.finishBinaryInsertion(newPlaceId, mid);
+          return;
+        }
+        this.binaryInsertion.high = mid - 1;
+      } else {
+        if (mid >= high) {
+          this.finishBinaryInsertion(newPlaceId, mid + 1);
+          return;
+        }
+        this.binaryInsertion.low = mid + 1;
+      }
+
+      const newLow = this.binaryInsertion.low;
+      const newHigh = this.binaryInsertion.high;
+
+      if (newLow > newHigh) {
+        this.finishBinaryInsertion(newPlaceId, newLow);
+        return;
+      }
+
+      const newMid = Math.floor((newLow + newHigh) / 2);
+      this.binaryInsertion.mid = newMid;
+      this.binaryInsertion.questionCount = questionCount + 1;
+      this.binaryInsertion.currentOpponentId = rankedPlaces[newMid].id;
+    },
+
+    finishBinaryInsertion(newPlaceId: string, insertAtRank: number) {
+      const newPlace = this.places.find(p => p.id === newPlaceId);
+      if (!newPlace) return;
+
+      newPlace.rank = insertAtRank + 1;
+      this.recalculateRanks();
+
+      this.binaryInsertion = {
+        isPlacing: false,
+        newPlaceId: null,
+        low: 0,
+        high: 0,
+        mid: 0,
+        questionCount: 0,
+        totalEstimate: 0,
+        currentOpponentId: null,
+      };
+    },
+
+    recalculateRanks() {
+      const ranked = this.places
+        .filter(p => p.status === 'ranked')
+        .sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity));
+
+      ranked.forEach((place, index) => {
+        place.rank = index + 1;
+      });
     },
   },
 });

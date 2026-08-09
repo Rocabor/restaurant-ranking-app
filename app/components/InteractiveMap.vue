@@ -28,8 +28,13 @@ if (typeof window !== 'undefined') {
     ui.openModal('share');
   };
   (window as any).tastemapStartDuel = (id: string) => {
-    store.startDuel(id);
-    ui.openModal('duel');
+    const place = store.places.find(p => p.id === id);
+    if (place && place.status === 'want') {
+      store.togglePlaceStatus(id, () => ui.openModal('duel'));
+    } else {
+      store.startBinaryInsertion(id);
+      ui.openModal('duel');
+    }
   };
 }
 
