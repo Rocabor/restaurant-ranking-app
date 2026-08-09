@@ -160,3 +160,66 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Marker Cluster Styles */
+.tastemap-cluster-wrapper {
+  background: none !important;
+  border: none !important;
+}
+
+.tastemap-cluster {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #059669, #047857);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+  border: 3px solid white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tastemap-cluster:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5);
+}
+
+.dark .tastemap-cluster {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4);
+}
+
+.dark .tastemap-cluster:hover {
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.5);
+}
+
+/* Marker Cluster Animation */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: rgba(5, 150, 105, 0.2) !important;
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.dark .marker-cluster-small,
+.dark .marker-cluster-medium,
+.dark .marker-cluster-large {
+  background: rgba(52, 211, 153, 0.2) !important;
+}
+
+.dark .marker-cluster-small div,
+.dark .marker-cluster-medium div,
+.dark .marker-cluster-large div {
+  background: linear-gradient(135deg, #34d399, #10b981) !important;
+}

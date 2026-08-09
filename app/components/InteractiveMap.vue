@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import L from 'leaflet';
+import 'leaflet.markercluster';
 import { Compass, Navigation, Share2, MapPin } from '@lucide/vue';
 
 const store = usePlacesStore();
@@ -10,6 +11,7 @@ const ui = useUIStore();
 const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 let tileLayer: L.TileLayer | null = null;
+let markerClusterGroup: L.MarkerClusterGroup | null = null;
 const markersMap = new Map<string, L.Marker>();
 
 const isLocating = ref(false);
@@ -51,6 +53,23 @@ onMounted(() => {
   const tileUrl = ui.isDarkMode ? DARK_TILES : LIGHT_TILES;
   tileLayer = L.tileLayer(tileUrl, { attribution: ATTR, maxZoom: 19 }).addTo(map);
 
+  markerClusterGroup = L.markerClusterGroup({
+    chunkedLoading: true,
+    maxClusterRadius: 50,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    iconCreateFunction: (cluster) => {
+      const count = cluster.getChildCount();
+      return L.divIcon({
+        html: `<div class="tastemap-cluster"><span>${count}</span></div>`,
+        className: 'tastemap-cluster-wrapper',
+        iconSize: [40, 40]
+      });
+    }
+  });
+  map.addLayer(markerClusterGroup);
+
   updateMarkers();
 
   window.addEventListener('resize', onResize);
@@ -58,6 +77,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', onResize);
+  if (markerClusterGroup) {
+    markerClusterGroup.clearLayers();
+  }
   if (map) {
     map.remove();
     map = null;
@@ -112,9 +134,9 @@ function highlightMarker(activeId: string | null) {
 }
 
 function updateMarkers() {
-  if (!map) return;
+  if (!map || !markerClusterGroup) return;
 
-  markersMap.forEach(m => m.remove());
+  markerClusterGroup.clearLayers();
   markersMap.clear();
 
   const bounds = L.latLngBounds([]);
@@ -147,7 +169,7 @@ function updateMarkers() {
       iconAnchor: [18, 36]
     });
 
-    const marker = L.marker(latLng, { icon: customIcon }).addTo(map!);
+    const marker = L.marker(latLng, { icon: customIcon });
 
     const priceString = '£'.repeat(place.priceLevel);
     const isDark = ui.isDarkMode;
@@ -231,6 +253,7 @@ function updateMarkers() {
     });
 
     markersMap.set(place.id, marker);
+    markerClusterGroup.addLayer(marker);
   });
 
   if (store.filteredPlaces.length > 0 && bounds.isValid()) {
