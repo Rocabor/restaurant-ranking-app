@@ -1,7 +1,6 @@
 // * app\utils\schemas.ts
 
 import { z } from 'zod';
-import { toTypedSchema } from '@vee-validate/zod';
 
 export const singlePlaceSchema = z.object({
   id: z.string().min(1, 'El ID es obligatorio'),
@@ -48,7 +47,3 @@ export const PlaceSchema = z.object({
   places: z.array(singlePlaceSchema),
   comparisons: z.array(singleComparisonSchema),
 });
-
-// Listos para Vee-Validate en tus componentes
-export const formPlaceValidation = toTypedSchema(singlePlaceSchema);
-export const formComparisonValidation = toTypedSchema(singleComparisonSchema);

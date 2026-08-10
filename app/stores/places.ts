@@ -186,10 +186,6 @@ export const usePlacesStore = defineStore('places', {
       this.places = this.places.filter((p) => p.id !== id);
     },
 
-    addComparison(comparison: Comparison) {
-      this.comparisons.push(comparison);
-    },
-
     clearFilters() {
       this.selectedStatus = 'all';
       this.selectedCuisine = 'all';
