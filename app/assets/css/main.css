@@ -88,32 +88,35 @@
 }
 
 .tastemap-marker-wrapper.is-active .tastemap-pin-inner {
-  transform: rotate(-45deg) scale(1.2);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  animation: tastemap-pulse 1.2s ease-in-out infinite;
+  border: 3px solid #fbbf24;
 }
 
-.tastemap-marker-wrapper.is-active .tastemap-pin::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 50% 50% 50% 4px;
-  background: inherit;
-  animation: tastemap-pulse 1.5s ease-out infinite;
-  z-index: -1;
+.dark .tastemap-marker-wrapper.is-active .tastemap-pin-inner {
+  border-color: #fbbf24;
+}
+
+.tastemap-marker-wrapper.is-active .tastemap-pin {
+  animation: tastemap-glow 1.2s ease-in-out infinite;
 }
 
 @keyframes tastemap-pulse {
-  0% {
-    transform: translateX(-50%) scale(1);
-    opacity: 0.6;
+  0%, 100% {
+    transform: rotate(-45deg) scale(1);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
   }
-  100% {
-    transform: translateX(-50%) scale(2.2);
-    opacity: 0;
+  50% {
+    transform: rotate(-45deg) scale(1.25);
+    box-shadow: 0 8px 32px rgba(251, 191, 36, 0.8);
+  }
+}
+
+@keyframes tastemap-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.9));
   }
 }
 
@@ -236,12 +239,14 @@
   }
 
   .tastemap-marker-wrapper.is-active .tastemap-pin-inner {
-    transform: rotate(-45deg) scale(1.1);
+    animation: none;
+    transform: rotate(-45deg) scale(1.15);
+    border-color: #fbbf24;
   }
 
-  .tastemap-marker-wrapper.is-active .tastemap-pin::after {
+  .tastemap-marker-wrapper.is-active .tastemap-pin {
     animation: none;
-    opacity: 0;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
   }
 
   .slide-fade-enter-active,
