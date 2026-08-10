@@ -177,16 +177,14 @@ function openPlaceOnMap(id: string) {
             <p class="text-xs text-text-tertiary font-medium">Here are some of the highest rated places in your collection</p>
           </div>
 
-          <router-link
-            to="/mapa"
-            class="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold w-fit hover:bg-primary-hover transition-all flex items-center gap-1.5">
+          <router-link to="/mapa" class="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold w-fit hover:bg-primary-hover transition-all flex items-center gap-1.5">
             <span>View full map ({{ store.places?.length || 0 }} restaurants)</span>
             <ChevronRight class="w-3.5 h-3.5" />
           </router-link>
         </div>
 
         <!-- Mini Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div
             v-for="place in topRankedPreview"
             :key="place.id"
@@ -212,9 +210,7 @@ function openPlaceOnMap(id: string) {
               <span class="text-primary font-semibold">{{ place.cuisine }}</span>
             </p>
 
-            <div v-if="place.specialty" class="text-xs text-text-secondary italic bg-bg-secondary p-2 rounded-lg border border-border">
-              ⭐ "{{ place.specialty }}"
-            </div>
+            <div v-if="place.specialty" class="text-xs text-text-secondary italic bg-bg-secondary p-2 rounded-lg border border-border">⭐ "{{ place.specialty }}"</div>
           </div>
         </div>
       </div>
@@ -252,18 +248,35 @@ function openPlaceOnMap(id: string) {
     <!-- Footer -->
     <footer class="mt-auto py-6 border-t border-border bg-surface text-center text-xs text-text-tertiary font-medium">
       <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <!-- Logo / Marca -->
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded-full bg-primary text-white font-serif font-bold text-xs flex items-center justify-center">T</div>
+          <div class="w-6 h-6 rounded-full bg-primary text-white font-serif font-bold text-xs flex items-center justify-center">
+            <MapPin class="w-3 h-3 text-white" />
+          </div>
           <span class="font-serif font-bold text-sm text-text-primary">Tastemap</span>
           <span>— Your personal food journal</span>
         </div>
 
-        <div class="flex items-center gap-4 text-[11px]">
-          <router-link to="/mapa" class="hover:text-primary transition-colors">Map</router-link>
-          <router-link to="/mapa" class="hover:text-primary transition-colors">Where to eat?</router-link>
-          <router-link to="/mapa" class="hover:text-primary transition-colors">Stats</router-link>
-          <router-link to="/mapa" class="hover:text-primary transition-colors">Share</router-link>
-        </div>
+        <!-- Atribución con la misma tipografía y estilos del footer -->
+        <nav aria-label="Attribution credits" class="flex flex-wrap items-center justify-center gap-1 text-xs text-text-tertiary font-medium">
+          <span>Challenge by</span>
+          <a
+            href="https://www.frontendmentor.io?ref=challenge"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-text-primary font-bold transition-all duration-300 ease-in-out hover:text-primary focus-visible:text-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 rounded-xs">
+            Frontend Mentor
+          </a>
+          <span>• Coded by</span>
+          <a
+            href="https://www.frontendmentor.io/profile/Rocabor"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-text-primary font-bold transition-all duration-300 ease-in-out hover:text-primary focus-visible:text-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 rounded-xs">
+            @Rocabor
+          </a>
+          <span class="text-text-primary font-bold">&copy;{{ new Date().getFullYear() }}</span>
+        </nav>
       </div>
     </footer>
 

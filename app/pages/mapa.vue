@@ -27,7 +27,7 @@ onMounted(() => {
         :class="ui.mobileView === 'map' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
       >
         <Map class="w-4 h-4" />
-        <span>Mapa</span>
+        <span>Map</span>
       </button>
       <button
         @click="ui.setMobileView('list')"
@@ -35,7 +35,7 @@ onMounted(() => {
         :class="ui.mobileView === 'list' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
       >
         <List class="w-4 h-4" />
-        <span>Lista ({{ store.places.length }})</span>
+        <span>List ({{ store.places.length }})</span>
       </button>
     </div>
 
