@@ -53,7 +53,7 @@ function goHome() {
       </button>
 
       <!-- Desktop Search Bar (app only) -->
-      <div v-if="!isLanding" class="hidden lg:flex items-center flex-1 max-w-xs relative mx-4">
+      <div v-if="!isLanding" class="hidden md:flex items-center flex-1 max-w-xs relative mx-4">
         <Search class="w-4 h-4 absolute left-3 text-text-tertiary" />
         <input
           v-model="searchQuery"
@@ -70,7 +70,7 @@ function goHome() {
       </div>
 
       <!-- Desktop Action Buttons -->
-      <div class="hidden lg:flex items-center gap-1.5 sm:gap-2">
+      <div class="hidden md:flex items-center gap-1.5 sm:gap-2">
         <template v-if="!isLanding">
           <button
             @click="ui.openModal('decider')"
@@ -139,7 +139,7 @@ function goHome() {
       </div>
 
       <!-- Mobile Icons -->
-      <div class="flex lg:hidden items-center gap-2">
+      <div class="flex md:hidden items-center gap-2">
         <button
           v-if="!isLanding"
           @click="ui.openModal('search')"
@@ -159,7 +159,7 @@ function goHome() {
     </div>
 
     <!-- Mobile Search Bar (expanded) -->
-    <div v-if="ui.activeModal === 'search'" class="lg:hidden border-t border-border bg-surface">
+    <div v-if="ui.activeModal === 'search'" class="md:hidden border-t border-border bg-surface">
       <div class="max-w-350 mx-auto px-4 py-3 flex items-center gap-2">
         <div class="relative flex-1">
           <Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
@@ -193,7 +193,7 @@ function goHome() {
       leave-to-class="opacity-0 -translate-y-2">
       <div
         v-if="ui.isMenuOpen"
-        class="lg:hidden absolute top-16 left-0 right-0 bg-surface border-b border-border shadow-lg z-40">
+        class="md:hidden absolute top-16 left-0 right-0 bg-surface border-b border-border shadow-lg z-40">
         <div class="max-w-350 mx-auto px-4 py-3 flex flex-col gap-1">
 
           <button

@@ -117,7 +117,6 @@ watch(() => store.selectedPlaceId, (id) => {
     map.stop();
     map.setView(latLng, Math.max(map.getZoom(), 15), { animate: true, duration: 0.4 });
     highlightMarker(id);
-    setTimeout(() => marker.openPopup(), 150);
   }
 });
 
@@ -227,8 +226,9 @@ function highlightMarker(activeId: string | null) {
 
 function updateMarkers() {
   if (!map || !markerClusterGroup) return;
+  const cluster = markerClusterGroup;
 
-  markerClusterGroup.clearLayers();
+  cluster.clearLayers();
   markersMap.clear();
 
   const bounds = L.latLngBounds([]);
@@ -268,7 +268,7 @@ function updateMarkers() {
     });
 
     markersMap.set(place.id, marker);
-    markerClusterGroup.addLayer(marker);
+    cluster.addLayer(marker);
   });
 
   if (store.filteredPlaces.length > 0 && bounds.isValid()) {
@@ -278,7 +278,6 @@ function updateMarkers() {
   if (store.selectedPlaceId) {
     const selectedMarker = markersMap.get(store.selectedPlaceId);
     if (selectedMarker) {
-      selectedMarker.openPopup();
       map.panTo(selectedMarker.getLatLng(), { animate: true, duration: 0.5 });
     }
   }
