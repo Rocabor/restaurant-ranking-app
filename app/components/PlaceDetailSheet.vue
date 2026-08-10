@@ -132,6 +132,7 @@ function confirmDelete() {
         <button
           @click="ui.closeDetailSheet()"
           class="p-1.5 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Close"
         >
           <X class="w-5 h-5" />
         </button>
@@ -207,9 +208,9 @@ function confirmDelete() {
 
         <!-- Personal Note -->
         <div v-if="place.note" class="space-y-1.5">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Personal Note
-          </h4>
+          </h3>
           <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800 border-l-4 border-emerald-600 text-xs text-gray-500 dark:text-gray-400 italic leading-relaxed">
             "{{ place.note }}"
           </div>
@@ -217,9 +218,9 @@ function confirmDelete() {
 
         <!-- Address & Map Info -->
         <div class="space-y-2">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Location & Address
-          </h4>
+          </h3>
           <p class="text-xs text-gray-900 dark:text-gray-100 flex items-start gap-1.5 leading-relaxed">
             <MapPin class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             <span>{{ place.address }}</span>
@@ -242,9 +243,9 @@ function confirmDelete() {
 
         <!-- Tags -->
         <div v-if="place.tags && place.tags.length > 0" class="space-y-1.5">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Tags
-          </h4>
+          </h3>
           <div class="flex flex-wrap gap-1.5">
             <span
               v-for="tag in place.tags"

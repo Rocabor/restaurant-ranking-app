@@ -4,7 +4,7 @@
 import { computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
-import { BarChart3, X, Trophy, Compass, Award } from '@lucide/vue';
+import { BarChart3, X, Trophy, Award } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -117,6 +117,9 @@ function filterByArea(areaName: string) {
   <div
     v-if="ui.activeModal === 'stats'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="stats-title"
   >
     <div class="relative w-full max-w-lg max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-6 overflow-y-auto scrollbar-thin animate-fade-in my-auto">
 
@@ -127,7 +130,7 @@ function filterByArea(areaName: string) {
             <BarChart3 class="w-5 h-5" />
           </div>
           <div>
-            <h2 class="font-serif font-bold text-xl text-text-primary">
+            <h2 id="stats-title" class="font-serif font-bold text-xl text-text-primary">
               Your Foodie Insights
             </h2>
             <p class="text-xs text-text-tertiary font-medium">
@@ -139,6 +142,7 @@ function filterByArea(areaName: string) {
         <button
           @click="ui.closeModal()"
           class="p-1.5 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary transition-all"
+          aria-label="Close"
         >
           <X class="w-5 h-5" />
         </button>
@@ -254,6 +258,10 @@ function filterByArea(areaName: string) {
               v-for="item in cuisineStats.slice(0, 5)"
               :key="item.name"
               @click="filterByCuisine(item.name)"
+              @keydown.enter="filterByCuisine(item.name)"
+              role="button"
+              tabindex="0"
+              :aria-label="`Filter by ${item.name}`"
               class="group cursor-pointer space-y-1"
             >
               <div class="flex justify-between text-xs font-semibold">
@@ -282,6 +290,10 @@ function filterByArea(areaName: string) {
               v-for="item in areaStats.slice(0, 5)"
               :key="item.name"
               @click="filterByArea(item.name)"
+              @keydown.enter="filterByArea(item.name)"
+              role="button"
+              tabindex="0"
+              :aria-label="`Filter by ${item.name}`"
               class="group cursor-pointer space-y-1"
             >
               <div class="flex justify-between text-xs font-semibold">

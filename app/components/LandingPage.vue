@@ -7,7 +7,7 @@ import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import Navbar from '../components/Navbar.vue';
 import AuthModal from '../components/AuthModal.vue';
-import { Sparkles, MapPin, Trophy, Dices, Share2, ChevronRight, ArrowRight, Utensils, Plus } from '@lucide/vue';
+import { Sparkles, MapPin, Trophy, Dices, Share2, ChevronRight, Utensils } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -191,7 +191,11 @@ function openPlaceOnMap(id: string) {
             v-for="place in topRankedPreview"
             :key="place.id"
             @click="openPlaceOnMap(place.id)"
-            class="p-4 rounded-2xl bg-surface border border-border hover:border-primary transition-all cursor-pointer shadow-xs space-y-2 group">
+            @keydown.enter="openPlaceOnMap(place.id)"
+            role="button"
+            tabindex="0"
+            :aria-label="`View ${place.name} on map`"
+            class="p-4 rounded-2xl bg-surface border border-border hover:border-primary focus-visible:border-primary transition-all cursor-pointer shadow-xs space-y-2 group">
             <div class="flex items-center justify-between">
               <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-primary text-white">Rank #{{ place.rank }}</span>
               <span class="text-xs font-bold text-primary">
@@ -199,9 +203,9 @@ function openPlaceOnMap(id: string) {
               </span>
             </div>
 
-            <h4 class="font-serif font-bold text-lg text-text-primary group-hover:text-primary transition-colors leading-tight">
+            <h3 class="font-serif font-bold text-lg text-text-primary group-hover:text-primary transition-colors leading-tight">
               {{ place.name }}
-            </h4>
+            </h3>
 
             <p class="text-xs text-text-tertiary font-medium">
               📍 {{ place.area }} •

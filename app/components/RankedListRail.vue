@@ -53,6 +53,7 @@ const hasActiveFilters = computed(() => {
       <button
         @click="ui.closeRail()"
         class="p-2 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+        aria-label="Close list"
       >
         <X class="w-5 h-5" />
       </button>

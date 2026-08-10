@@ -4,10 +4,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
-import {
-  Share2, X, Copy, CheckCircle2, MessageCircle, Send,
-  ExternalLink, Camera, MessageSquare, Smartphone
-} from '@lucide/vue';
+import { Share2, X, Copy, CheckCircle2, Smartphone } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -145,6 +142,9 @@ function triggerNativeShare() {
   <div
     v-if="ui.activeModal === 'share'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="share-title"
   >
     <div class="relative w-full max-w-md max-h-[92vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
 
@@ -155,7 +155,7 @@ function triggerNativeShare() {
             <Share2 class="w-5 h-5" />
           </div>
           <div>
-            <h2 class="font-serif font-bold text-xl text-text-primary">
+            <h2 id="share-title" class="font-serif font-bold text-xl text-text-primary">
               Share on Social Media
             </h2>
             <p class="text-xs text-text-tertiary font-medium">
@@ -167,6 +167,7 @@ function triggerNativeShare() {
         <button
           @click="ui.closeModal()"
           class="p-1.5 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary transition-all"
+          aria-label="Close"
         >
           <X class="w-5 h-5" />
         </button>
@@ -238,7 +239,7 @@ function triggerNativeShare() {
           <CheckCircle2 class="w-4 h-4 shrink-0" />
           <span>{{ notification }}</span>
         </div>
-        <button @click="notification = null" class="opacity-60 hover:opacity-100">
+        <button @click="notification = null" class="opacity-60 hover:opacity-100" aria-label="Dismiss notification">
           <X class="w-3.5 h-3.5" />
         </button>
       </div>

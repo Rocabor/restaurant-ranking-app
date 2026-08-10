@@ -37,6 +37,7 @@ function generateRecommendation() {
 
 function goToRecommendation() {
   if (recommendation.value) {
+    store.selectPlace(recommendation.value.id);
     ui.closeModal();
     recommendation.value = null;
   }
@@ -47,6 +48,9 @@ function goToRecommendation() {
   <div
     v-if="ui.activeModal === 'decider'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="decider-title"
   >
     <div class="relative w-full max-w-md bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 animate-fade-in">
 
@@ -57,7 +61,7 @@ function goToRecommendation() {
             <Sparkles class="w-5 h-5" />
           </div>
           <div>
-            <h2 class="font-serif font-bold text-xl text-text-primary">
+            <h2 id="decider-title" class="font-serif font-bold text-xl text-text-primary">
               Where to Eat Today?
             </h2>
             <p class="text-xs text-text-tertiary font-medium">
@@ -69,6 +73,7 @@ function goToRecommendation() {
         <button
           @click="ui.closeModal()"
           class="p-1.5 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary"
+          aria-label="Close"
         >
           <X class="w-5 h-5" />
         </button>

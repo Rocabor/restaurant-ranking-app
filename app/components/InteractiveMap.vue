@@ -4,7 +4,7 @@ import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import L from 'leaflet';
 import 'leaflet.markercluster';
-import { Compass, Navigation, Share2, MapPin } from '@lucide/vue';
+import { Compass, Navigation, MapPin } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -346,6 +346,7 @@ function locateUser() {
         @click="fitAllPins"
         class="w-9 h-9 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 shadow-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-all active:scale-95"
         title="View all places"
+        aria-label="View all places"
       >
         <Compass class="w-4 h-4" />        
       </button>
@@ -355,6 +356,7 @@ function locateUser() {
         :disabled="isLocating"
         class="w-9 h-9 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 shadow-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-50"
         title="Center on my location"
+        aria-label="Center on my location"
       >
         <Navigation class="w-4 h-4" :class="{ 'animate-spin': isLocating }" />
       </button>

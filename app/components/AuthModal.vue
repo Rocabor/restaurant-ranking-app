@@ -59,6 +59,9 @@ async function handleSubmit() {
   <div
     v-if="ui.activeModal === 'auth'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="auth-title"
   >
     <div class="relative w-full max-w-sm bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 animate-fade-in">
 
@@ -69,7 +72,7 @@ async function handleSubmit() {
           <UtensilsCrossed />
           </div>
           <div>
-            <h2 class="font-serif font-bold text-xl text-text-primary">
+            <h2 id="auth-title" class="font-serif font-bold text-xl text-text-primary">
               {{ mode === 'login' ? 'Log In' : mode === 'register' ? 'Create Account' : 'Reset Password' }}
             </h2>
             <p class="text-xs text-text-tertiary font-medium">
@@ -81,6 +84,7 @@ async function handleSubmit() {
         <button
           @click="ui.closeModal()"
           class="p-1.5 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary"
+          aria-label="Close"
         >
           <X class="w-5 h-5" />
         </button>

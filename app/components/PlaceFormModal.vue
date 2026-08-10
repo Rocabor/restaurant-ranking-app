@@ -142,13 +142,16 @@ function mapCuisineToGroup(c: string): string {
   <div
     v-if="ui.activeModal === 'addPlace' || ui.activeModal === 'editPlace'"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+    role="dialog"
+    aria-modal="true"
+    :aria-labelledby="ui.activeModal === 'addPlace' ? 'add-place-title' : 'edit-place-title'"
   >
     <div class="relative w-full max-w-md max-h-[90vh] bg-surface border border-border rounded-3xl p-6 shadow-2xl space-y-5 overflow-y-auto scrollbar-thin my-auto animate-fade-in">
 
       <!-- Header -->
       <div class="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
         <div>
-          <h2 class="font-serif font-bold text-xl text-gray-900 dark:text-gray-100">
+          <h2 :id="isEditing ? 'edit-place-title' : 'add-place-title'" class="font-serif font-bold text-xl text-gray-900 dark:text-gray-100">
             {{ isEditing ? 'Edit Place' : 'Add New Place' }}
           </h2>
           <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">
@@ -159,6 +162,7 @@ function mapCuisineToGroup(c: string): string {
         <button
           @click="ui.closeModal()"
           class="p-1.5 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+          aria-label="Close"
         >
           <X class="w-5 h-5" />
         </button>

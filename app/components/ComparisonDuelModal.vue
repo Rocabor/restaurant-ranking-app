@@ -113,7 +113,12 @@ function handleChoice(choice: 'new' | 'existing' | 'tie') {
         <!-- NEW PLACE (Option A) -->
         <div
           @click="handleChoice('new')"
-          class="group relative bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-emerald-500 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between space-y-4 cursor-pointer"
+          @keydown.enter="handleChoice('new')"
+          @keydown.space.prevent="handleChoice('new')"
+          role="button"
+          tabindex="0"
+          :aria-label="`Select ${newPlace.name} as better`"
+          class="group relative bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-emerald-500 focus-visible:border-emerald-500 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between space-y-4 cursor-pointer"
         >
           <div class="space-y-3">
 
@@ -193,7 +198,12 @@ function handleChoice(choice: 'new' | 'existing' | 'tie') {
         <!-- EXISTING PLACE (Option B) -->
         <div
           @click="handleChoice('existing')"
-          class="group relative bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-emerald-500 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between space-y-4 cursor-pointer"
+          @keydown.enter="handleChoice('existing')"
+          @keydown.space.prevent="handleChoice('existing')"
+          role="button"
+          tabindex="0"
+          :aria-label="`Select ${currentOpponent.name} as better`"
+          class="group relative bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-emerald-500 focus-visible:border-emerald-500 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between space-y-4 cursor-pointer"
         >
           <div class="space-y-3">
 

@@ -22,11 +22,13 @@ onMounted(() => {
   <LandingPage v-if="ui.showLanding" />
 
   <div v-else>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <Navbar />
     <div class="flex h-[calc(100dvh-64px)]">
       <button
         @click="ui.toggleRail()"
         class="fixed bottom-6 left-6 z-30 lg:hidden w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:bg-primary-hover transition-all active:scale-95"
+        aria-label="Toggle restaurant list"
       >
         <List class="w-5 h-5" />
       </button>
@@ -48,5 +50,4 @@ onMounted(() => {
     <ConfirmModal />
   </div>
 
-  <ConfirmModal v-if="ui.showLanding" />
-</template>
+  </template>

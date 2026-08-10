@@ -42,7 +42,7 @@ function goHome() {
     <div class="max-w-350 mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
 
       <!-- Brand & Title -->
-      <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" @click="goHome()">
+      <button @click="goHome()" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" aria-label="Go to homepage">
         <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-lg shadow-sm"><MapPin class="w-4 h-4 text-white" /></div>
         <div>
           <h1 class="font-serif font-bold text-xl sm:text-2xl tracking-tight leading-none text-text-primary">
@@ -50,7 +50,7 @@ function goHome() {
           </h1>
           <p class="text-[8px] md:text-[11px] text-text-tertiary font-medium">Your personal map & honest ranking</p>
         </div>
-      </div>
+      </button>
 
       <!-- Desktop Search Bar (app only) -->
       <div v-if="!isLanding" class="hidden lg:flex items-center flex-1 max-w-xs relative mx-4">
@@ -60,10 +60,11 @@ function goHome() {
           type="text"
           placeholder="Search place, cuisine, area..."
           class="w-full pl-9 pr-8 py-1.5 text-xs bg-bg-secondary border border-border rounded-full focus:outline-none focus:border-primary text-text-primary transition-all placeholder:text-text-tertiary" />
-        <button
-          v-if="searchQuery"
-          @click="searchQuery = ''"
-          class="absolute right-2.5 z-10 text-text-tertiary hover:text-text-primary p-0.5">
+          <button
+            v-if="searchQuery"
+            @click="searchQuery = ''"
+            class="absolute right-2.5 z-10 text-text-tertiary hover:text-text-primary p-0.5"
+            aria-label="Clear search">
           <X class="w-3.5 h-3.5" />
         </button>
       </div>
@@ -100,7 +101,8 @@ function goHome() {
         <button
           @click="ui.toggleDarkMode()"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          :title="ui.isDarkMode ? 'Light mode' : 'Dark mode'">
+          :title="ui.isDarkMode ? 'Light mode' : 'Dark mode'"
+          aria-label="Toggle dark mode">
           <Sun v-if="ui.isDarkMode" class="w-4 h-4 text-highlight"/>
           <Moon v-else class="w-4 h-4" />
         </button>
@@ -113,7 +115,7 @@ function goHome() {
             <span class="max-w-25 truncate text-text-primary text-[11px] hidden sm:inline">
               {{ ui.currentUser.email.split('@')[0] }}
             </span>
-            <button @click="ui.logoutUser()" class="p-1 flex hover:text-red-500 text-text-tertiary transition-colors" title="Log out">
+            <button @click="ui.logoutUser()" class="p-1 flex hover:text-red-500 text-text-tertiary transition-colors" title="Log out" aria-label="Log out">
               <LogOut class="w-3.5 h-3.5" />
             </button>
           </div>
@@ -141,13 +143,15 @@ function goHome() {
         <button
           v-if="!isLanding"
           @click="ui.openModal('search')"
-          class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors">
+          class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+          aria-label="Search">
           <Search class="w-5 h-5" />
         </button>
         <button
           v-if="!isLanding"
           @click="ui.toggleMenu()"
-          class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors">
+          class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+          :aria-label="ui.isMenuOpen ? 'Close menu' : 'Open menu'">
           <X v-if="ui.isMenuOpen" class="w-5 h-5" />
           <Menu v-else class="w-5 h-5" />
         </button>
@@ -160,7 +164,6 @@ function goHome() {
         <div class="relative flex-1">
           <Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
           <input
-            ref="mobileSearchInput"
             v-model="searchQuery"
             type="text"
             placeholder="Search place, cuisine, area..."

@@ -17,6 +17,7 @@ onMounted(() => {
 
 <template>
   <div>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <Navbar />
     <div class="flex h-[calc(100dvh-64px)]">
       <button
@@ -31,6 +32,7 @@ onMounted(() => {
           hover:bg-primary-hover
           transition-all active:scale-95
         "
+        aria-label="Toggle restaurant list"
       >
         <List class="w-5 h-5" />
       </button>
