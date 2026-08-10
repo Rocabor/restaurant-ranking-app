@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 type ModalType = 'decider' | 'stats' | 'share' | 'auth' | 'addPlace' | 'editPlace' | 'duel' | 'search' | 'confirm' | null;
+type MobileView = 'map' | 'list';
 
 interface ConfirmModalData {
   title: string;
@@ -20,6 +21,7 @@ interface UIState {
   showDetailSheet: boolean;
   showLanding: boolean;
   confirmData: ConfirmModalData | null;
+  mobileView: MobileView;
 }
 
 export const useUIStore = defineStore('ui', {
@@ -32,6 +34,7 @@ export const useUIStore = defineStore('ui', {
     showDetailSheet: false,
     showLanding: true,
     confirmData: null,
+    mobileView: 'map',
   }),
 
   actions: {
@@ -114,6 +117,14 @@ export const useUIStore = defineStore('ui', {
     closeConfirm() {
       this.confirmData = null;
       this.activeModal = null;
+    },
+
+    toggleMobileView() {
+      this.mobileView = this.mobileView === 'map' ? 'list' : 'map';
+    },
+
+    setMobileView(view: MobileView) {
+      this.mobileView = view;
     },
   },
 });

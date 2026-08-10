@@ -2,7 +2,7 @@
 
 <template>
   <div
-    @click="store.selectPlace(place.id)"
+    @click="selectPlace"
     @mouseenter="store.setHoveredPlace(place.id)"
     @mouseleave="store.setHoveredPlace(null)"
     class="group relative bg-surface border rounded-2xl p-4 transition-all duration-200 cursor-pointer hover:shadow-md hover:-translate-y-0.5"
@@ -13,8 +13,8 @@
     role="button"
     tabindex="0"
     :aria-label="`${place.name}, ${place.cuisine}, ${place.area}, ${place.status === 'ranked' ? `ranked #${place.rank}` : 'want to try'}`"
-    @keydown.enter="store.selectPlace(place.id)"
-    @keydown.space.prevent="store.selectPlace(place.id)"
+    @keydown.enter="selectPlace"
+    @keydown.space.prevent="selectPlace"
   >
     <div class="flex items-start gap-3.5">
 
@@ -142,5 +142,10 @@ function getPriceGrapheme(level: number) {
 function startDuel() {
   store.startBinaryInsertion(props.place.id);
   ui.openModal('duel');
+}
+
+function selectPlace() {
+  store.selectPlace(props.place.id);
+  ui.openDetailSheet();
 }
 </script>

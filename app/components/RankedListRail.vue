@@ -6,7 +6,7 @@ import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import PlaceCard from './PlaceCard.vue';
 import LoadingSkeleton from './LoadingSkeleton.vue';
-import { Utensils, X } from '@lucide/vue';
+import { Utensils } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -24,43 +24,18 @@ const hasActiveFilters = computed(() => {
 </script>
 
 <template>
-  <!-- Mobile Overlay -->
-  <div
-    v-if="ui.isRailOpen"
-    class="fixed inset-0 z-40 bg-black/50 lg:hidden"
-    @click="ui.closeRail()"
-  />
-
   <!-- Rail Container -->
   <div
     class="
       flex flex-col h-full bg-bg-primary border-r border-border
-      fixed lg:relative z-50 lg:z-auto
+      md:relative z-50 md:z-auto
       inset-y-0 left-0
-      w-[80vw] sm:w-80 lg:w-75 xl:w-90
-      transform transition-transform duration-300 ease-in-out
-      lg:translate-x-0
-      lg:transform-none
+      w-full md:w-75 xl:w-90
     "
-    :class="ui.isRailOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
   >
 
-    <!-- Mobile Close Button -->
-    <div class="flex items-center justify-between p-4 border-b border-border bg-surface lg:hidden">
-      <h2 class="font-serif font-bold text-lg text-text-primary">
-        Your Tables
-      </h2>
-      <button
-        @click="ui.closeRail()"
-        class="p-2 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-        aria-label="Close list"
-      >
-        <X class="w-5 h-5" />
-      </button>
-    </div>
-
-    <!-- Header Controls -->
-    <div class="p-4 border-b border-border bg-surface space-y-3 hidden lg:block">
+    <!-- Header Controls (desktop) -->
+    <div class="p-2 border-b border-border bg-surface space-y-3 hidden md:block">
 
       <!-- Top Title & Counts -->
       <div class="flex items-center justify-between gap-2">
@@ -140,7 +115,7 @@ const hasActiveFilters = computed(() => {
     </div>
 
     <!-- Mobile Sort & Filters (simplified) -->
-    <div class="p-3 border-b border-border bg-surface space-y-3 lg:hidden">
+    <div class="p-3 border-b border-border bg-surface space-y-3 md:hidden">
       <div class="flex items-center gap-2">
         <select
           v-model="store.sortBy"
