@@ -88,50 +88,68 @@ function confirmDelete() {
 </script>
 
 <style scoped>
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: all 0.3s ease-out;
-}
-.slide-fade-enter-from,
-.slide-fade-leave-to {
+/* Mobile: full-width overlay that slides from right */
+.detail-panel {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  z-index: 40;
   transform: translateX(100%);
-  opacity: 0;
+  transition: transform 0.3s ease-in-out;
+}
+.detail-panel.is-open {
+  transform: translateX(0);
+}
+/* Tablet & Desktop: fixed right-side panel */
+@media (min-width: 768px) {
+  .detail-panel {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: 24rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+  .detail-panel.is-open {
+    transform: translateX(0);
+  }
 }
 </style>
 
 <template>
-  <Transition name="slide-fade">
-    <div
-      v-if="isVisible"
-      ref="sheetRef"
-      class="fixed inset-y-0 right-0 z-40 w-full sm:w-90 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-2xl flex flex-col overflow-hidden"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="place ? `Details for ${place.name}` : 'Place details'"
-    >
+  <div
+    v-if="isVisible && place"
+    ref="sheetRef"
+    class="detail-panel shrink-0 bg-surface border-l border-border shadow-2xl flex flex-col overflow-hidden h-full"
+    :class="{ 'is-open': isVisible }"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="place ? `Details for ${place.name}` : 'Place details'"
+  >
       <!-- Header Bar -->
-      <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
+      <div class="p-4 border-b border-border flex items-center justify-between bg-bg-secondary">
         <div class="flex items-center gap-2">
           <span
             v-if="place.status === 'ranked' && place.rank !== null"
-            class="px-2.5 py-1 rounded-full text-xs font-serif font-bold bg-emerald-600 text-white shadow-sm"
+            class="px-2.5 py-1 rounded-full text-xs font-serif font-bold bg-primary text-on-primary shadow-sm"
           >
             Rank #{{ place.rank }}
           </span>
           <span
             v-else
-            class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+            class="px-2.5 py-1 rounded-full text-xs font-semibold bg-highlight/10 text-highlight-strong border border-highlight/30"
           >
             Want to Try
           </span>
-          <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">
+          <span class="text-xs text-text-tertiary font-medium">
             Added: {{ formatDate(place.dateAdded) }}
           </span>
         </div>
 
         <button
           @click="ui.closeDetailSheet()"
-          class="p-1.5 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="p-1.5 rounded-full text-text-tertiary hover:text-text-primary hover:bg-bg-secondary transition-colors"
           aria-label="Close"
         >
           <X class="w-5 h-5" />
@@ -144,15 +162,15 @@ function confirmDelete() {
         <!-- Main Title & Specialty -->
         <div>
           <div class="flex items-start justify-between gap-3">
-            <h2 class="font-serif font-bold text-2xl text-gray-900 dark:text-gray-100 leading-tight">
+            <h2 class="font-serif font-bold text-2xl text-text-primary leading-tight">
               {{ place.name }}
             </h2>
-            <span class="text-base font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-0.5 rounded-full">
+            <span class="text-base font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
               {{ '£'.repeat(place.priceLevel || 1) }}
             </span>
           </div>
 
-          <p v-if="place.specialty" class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+          <p v-if="place.specialty" class="text-sm font-medium text-text-secondary mt-1">
             {{ place.specialty }}
           </p>
 
@@ -163,16 +181,16 @@ function confirmDelete() {
             >
               {{ place.cuisine }}
             </span>
-            <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">
+            <span class="text-xs text-text-tertiary font-medium">
               📍 {{ place.area }}
             </span>
           </div>
         </div>
 
         <!-- Primary Ranking CTA -->
-        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-medium">
-            <span>Current Status: <strong class="text-gray-900 dark:text-gray-100">{{ place.status === 'ranked' ? 'Visited' : 'Pending' }}</strong></span>
+        <div class="bg-bg-secondary border border-border rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between text-xs text-text-secondary font-medium">
+            <span>Current Status: <strong class="text-text-primary">{{ place.status === 'ranked' ? 'Visited' : 'Pending' }}</strong></span>
             <span v-if="place.status === 'ranked'">{{ place.visits }} {{ place.visits === 1 ? 'visit' : 'visits' }}</span>
           </div>
 
@@ -180,7 +198,7 @@ function confirmDelete() {
           <button
             v-if="place.status === 'want'"
             @click="markAsVisited"
-            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"
+            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-on-primary shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"
           >
             <CheckCircle2 class="w-4 h-4" />
             <span>I've been here! Rank now</span>
@@ -190,7 +208,7 @@ function confirmDelete() {
           <div v-else class="flex gap-2">
             <button
               @click="store.startBinaryInsertion(place.id); ui.openModal('duel')"
-              class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-1.5"
+              class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-on-primary transition-all flex items-center justify-center gap-1.5"
             >
               <Trophy class="w-3.5 h-3.5" />
               <span>Change Rank</span>
@@ -198,7 +216,7 @@ function confirmDelete() {
 
             <button
               @click="incrementVisit"
-              class="py-2 px-3 rounded-xl text-xs font-semibold bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-1"
+              class="py-2 px-3 rounded-xl text-xs font-semibold bg-surface border border-border text-text-primary hover:bg-bg-secondary transition-all flex items-center justify-center gap-1"
             >
               <Plus class="w-3.5 h-3.5" />
               <span>+1 Visit</span>
@@ -208,21 +226,21 @@ function confirmDelete() {
 
         <!-- Personal Note -->
         <div v-if="place.note" class="space-y-1.5">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             Personal Note
           </h3>
-          <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800 border-l-4 border-emerald-600 text-xs text-gray-500 dark:text-gray-400 italic leading-relaxed">
+          <div class="p-3.5 rounded-xl bg-bg-secondary border-l-4 border-primary text-xs text-text-secondary italic leading-relaxed">
             "{{ place.note }}"
           </div>
         </div>
 
         <!-- Address & Map Info -->
         <div class="space-y-2">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             Location & Address
           </h3>
-          <p class="text-xs text-gray-900 dark:text-gray-100 flex items-start gap-1.5 leading-relaxed">
-            <MapPin class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+          <p class="text-xs text-text-primary flex items-start gap-1.5 leading-relaxed">
+            <MapPin class="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <span>{{ place.address }}</span>
           </p>
         </div>
@@ -233,24 +251,24 @@ function confirmDelete() {
             :href="place.website"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 hover:border-emerald-500 transition-all"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-bg-secondary border border-border text-text-primary hover:border-primary transition-all"
           >
-            <Globe class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <Globe class="w-4 h-4 text-primary" />
             <span>Visit official website</span>
-            <ExternalLink class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+            <ExternalLink class="w-3.5 h-3.5 text-text-tertiary" />
           </a>
         </div>
 
         <!-- Tags -->
         <div v-if="place.tags && place.tags.length > 0" class="space-y-1.5">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             Tags
           </h3>
           <div class="flex flex-wrap gap-1.5">
             <span
               v-for="tag in place.tags"
               :key="tag"
-              class="text-xs px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700"
+              class="text-xs px-2.5 py-1 rounded-full bg-bg-secondary text-text-secondary font-medium border border-border"
             >
               #{{ tag }}
             </span>
@@ -260,10 +278,10 @@ function confirmDelete() {
       </div>
 
       <!-- Footer Actions -->
-      <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center justify-between gap-2">
+      <div class="p-4 border-t border-border bg-bg-secondary flex items-center justify-between gap-2">
         <button
           @click="shareThisPlace"
-          class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all shadow-xs"
+          class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-primary/10 text-primary hover:bg-primary hover:text-on-primary transition-all shadow-xs"
         >
           <Share2 class="w-3.5 h-3.5" />
           <span>Card / Share</span>
@@ -272,7 +290,7 @@ function confirmDelete() {
         <div class="flex items-center gap-1.5">
           <button
             @click="openEdit"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-surface border border-border text-text-primary hover:bg-bg-secondary transition-all"
           >
             <Edit3 class="w-3.5 h-3.5" />
             <span>Edit</span>
@@ -280,7 +298,7 @@ function confirmDelete() {
 
           <button
             @click="confirmDelete"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-danger hover:bg-danger/10 transition-all"
           >
             <Trash2 class="w-3.5 h-3.5" />
             <span>Delete</span>
@@ -289,5 +307,4 @@ function confirmDelete() {
       </div>
 
     </div>
-  </Transition>
 </template>
