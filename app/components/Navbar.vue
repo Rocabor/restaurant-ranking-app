@@ -3,8 +3,9 @@
 <script setup lang="ts">
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
+import { useRouter, useRoute } from 'vue-router';
 import {
-  UtensilsCrossed,
+  MapPin,
   Search,
   X,
   Menu,
@@ -20,6 +21,20 @@ import {
 
 const store = usePlacesStore();
 const ui = useUIStore();
+const router = useRouter();
+const route = useRoute();
+
+const isLanding = computed(() => route.path === '/');
+
+const searchQuery = computed({
+  get: () => store.searchQuery,
+  set: (val: string) => { store.searchQuery = val; },
+});
+
+function goHome() {
+  ui.showLanding = true;
+  router.push('/');
+}
 </script>
 
 <template>
@@ -27,8 +42,8 @@ const ui = useUIStore();
     <div class="max-w-350 mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
 
       <!-- Brand & Title -->
-      <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" @click="ui.showLandingPage()">
-        <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-lg shadow-sm"><UtensilsCrossed /></div>
+      <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" @click="goHome()">
+        <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-lg shadow-sm"><MapPin class="w-4 h-4 text-white" /></div>
         <div>
           <h1 class="font-serif font-bold text-xl sm:text-2xl tracking-tight leading-none text-text-primary">
             Tastemap<span class="text-highlight">.</span>
@@ -37,17 +52,17 @@ const ui = useUIStore();
         </div>
       </div>
 
-      <!-- Desktop Search Bar -->
-      <div class="hidden lg:flex items-center flex-1 max-w-xs relative mx-4">
+      <!-- Desktop Search Bar (app only) -->
+      <div v-if="!isLanding" class="hidden lg:flex items-center flex-1 max-w-xs relative mx-4">
         <Search class="w-4 h-4 absolute left-3 text-text-tertiary" />
         <input
-          v-model="ui.searchQuery"
+          v-model="searchQuery"
           type="text"
           placeholder="Search place, cuisine, area..."
           class="w-full pl-9 pr-8 py-1.5 text-xs bg-bg-secondary border border-border rounded-full focus:outline-none focus:border-primary text-text-primary transition-all placeholder:text-text-tertiary" />
         <button
-          v-if="ui.searchQuery"
-          @click="ui.searchQuery = ''"
+          v-if="searchQuery"
+          @click="searchQuery = ''"
           class="absolute right-2.5 z-10 text-text-tertiary hover:text-text-primary p-0.5">
           <X class="w-3.5 h-3.5" />
         </button>
@@ -55,30 +70,32 @@ const ui = useUIStore();
 
       <!-- Desktop Action Buttons -->
       <div class="hidden lg:flex items-center gap-1.5 sm:gap-2">
-        <button
-          @click="ui.openModal('decider')"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-bg-secondary hover:bg-bg-tertiary text-text-primary border border-border transition-all active:scale-95"
-          title="Help me decide where to eat"
-          aria-label="Help me decide where to eat">
-          <Sparkles class="w-3.5 h-3.5 text-highlight-strong"/>
-          <span class="hidden sm:inline">Where to eat?</span>
-        </button>
+        <template v-if="!isLanding">
+          <button
+            @click="ui.openModal('decider')"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-bg-secondary hover:bg-bg-tertiary text-text-primary border border-border transition-all active:scale-95"
+            title="Help me decide where to eat"
+            aria-label="Help me decide where to eat">
+            <Sparkles class="w-3.5 h-3.5 text-highlight-strong"/>
+            <span class="hidden sm:inline">Where to eat?</span>
+          </button>
 
-        <button
-          @click="ui.openModal('stats')"
-          class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          title="Taste stats"
-          aria-label="View taste statistics">
-          <BarChart3 class="w-4 h-4" />
-        </button>
+          <button
+            @click="ui.openModal('stats')"
+            class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+            title="Taste stats"
+            aria-label="View taste statistics">
+            <BarChart3 class="w-4 h-4" />
+          </button>
 
-        <button
-          @click="ui.openModal('share')"
-          class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-          title="Share or Export"
-          aria-label="Share or export your map">
-          <Share2 class="w-4 h-4" />
-        </button>
+          <button
+            @click="ui.openModal('share')"
+            class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+            title="Share or Export"
+            aria-label="Share or export your map">
+            <Share2 class="w-4 h-4" />
+          </button>
+        </template>
 
         <button
           @click="ui.toggleDarkMode()"
@@ -111,6 +128,7 @@ const ui = useUIStore();
         </div>
 
         <button
+          v-if="!isLanding"
           @click="ui.openModal('addPlace')"
           class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary hover:bg-primary-hover text-on-primary shadow-sm transition-all active:scale-95 ml-1">
           <Plus class="w-4 h-4" />
@@ -121,11 +139,13 @@ const ui = useUIStore();
       <!-- Mobile Icons -->
       <div class="flex lg:hidden items-center gap-2">
         <button
+          v-if="!isLanding"
           @click="ui.openModal('search')"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors">
           <Search class="w-5 h-5" />
         </button>
         <button
+          v-if="!isLanding"
           @click="ui.toggleMenu()"
           class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors">
           <X v-if="ui.isMenuOpen" class="w-5 h-5" />
@@ -141,13 +161,13 @@ const ui = useUIStore();
           <Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
           <input
             ref="mobileSearchInput"
-            v-model="ui.searchQuery"
+            v-model="searchQuery"
             type="text"
             placeholder="Search place, cuisine, area..."
             class="w-full pl-9 pr-8 py-2 text-sm bg-bg-secondary border border-border rounded-full focus:outline-none focus:border-primary text-text-primary transition-all placeholder:text-text-tertiary" />
           <button
-            v-if="ui.searchQuery"
-            @click="ui.searchQuery = ''"
+            v-if="searchQuery"
+            @click="searchQuery = ''"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary">
             <X class="w-4 h-4" />
           </button>

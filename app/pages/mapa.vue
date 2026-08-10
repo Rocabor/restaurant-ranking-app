@@ -1,5 +1,3 @@
-<!--* app\pages\index.vue  -->
-
 <script setup lang="ts">
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
@@ -7,26 +5,32 @@ import { List } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
-const route = useRoute();
 
 onMounted(() => {
+  ui.hideLanding();
   ui.initDarkMode();
-  store.loadData();
-  if (route.path === '/') {
-    ui.showLanding = true;
+  if (store.places.length === 0) {
+    store.loadData();
   }
 });
 </script>
 
 <template>
-  <LandingPage v-if="ui.showLanding" />
-
-  <div v-else>
+  <div>
     <Navbar />
     <div class="flex h-[calc(100dvh-64px)]">
       <button
         @click="ui.toggleRail()"
-        class="fixed bottom-6 left-6 z-30 lg:hidden w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:bg-primary-hover transition-all active:scale-95"
+        class="
+          fixed bottom-6 left-6 z-30
+          lg:hidden
+          w-12 h-12 rounded-full
+          bg-primary text-white
+          shadow-lg
+          flex items-center justify-center
+          hover:bg-primary-hover
+          transition-all active:scale-95
+        "
       >
         <List class="w-5 h-5" />
       </button>
@@ -47,6 +51,4 @@ onMounted(() => {
     <ComparisonDuelModal />
     <ConfirmModal />
   </div>
-
-  <ConfirmModal v-if="ui.showLanding" />
 </template>

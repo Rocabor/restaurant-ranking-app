@@ -32,6 +32,7 @@ interface PlacesState {
   hoveredPlaceId: string | null;
   editingPlace: Place | null;
   binaryInsertion: BinaryInsertionState;
+  searchQuery: string;
 }
 
 export const usePlacesStore = defineStore('places', {
@@ -59,6 +60,7 @@ export const usePlacesStore = defineStore('places', {
       totalEstimate: 0,
       currentOpponentId: null,
     },
+    searchQuery: '',
   }),
 
   getters: {
@@ -113,6 +115,16 @@ export const usePlacesStore = defineStore('places', {
 
       if (state.selectedTag) {
         result = result.filter((p) => p.tags?.includes(state.selectedTag!));
+      }
+
+      if (state.searchQuery.trim()) {
+        const q = state.searchQuery.toLowerCase().trim();
+        result = result.filter((p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.cuisine.toLowerCase().includes(q) ||
+          p.area.toLowerCase().includes(q) ||
+          p.tags?.some(t => t.toLowerCase().includes(q))
+        );
       }
 
       // Apply sorting
@@ -184,6 +196,7 @@ export const usePlacesStore = defineStore('places', {
       this.selectedPrice = null;
       this.selectedArea = null;
       this.selectedTag = null;
+      this.searchQuery = '';
     },
 
     selectPlace(id: string) {
@@ -222,7 +235,7 @@ export const usePlacesStore = defineStore('places', {
     },
 
     startBinaryInsertion(newPlaceId: string) {
-      const rankedPlaces = this.rankedPlaces;
+      const rankedPlaces = this.rankedPlaces.filter(p => p.id !== newPlaceId);
       const n = rankedPlaces.length;
 
       if (n === 0) {
@@ -230,6 +243,17 @@ export const usePlacesStore = defineStore('places', {
         if (place) {
           place.rank = 1;
         }
+        this.recalculateRanks();
+        this.binaryInsertion = {
+          isPlacing: false,
+          newPlaceId: null,
+          low: 0,
+          high: 0,
+          mid: 0,
+          questionCount: 0,
+          totalEstimate: 0,
+          currentOpponentId: null,
+        };
         return;
       }
 
@@ -268,13 +292,13 @@ export const usePlacesStore = defineStore('places', {
       const { newPlaceId, low, high, mid, questionCount } = this.binaryInsertion;
       if (!newPlaceId) return;
 
-      const rankedPlaces = this.rankedPlaces;
+      const rankedPlaces = this.rankedPlaces.filter(p => p.id !== newPlaceId);
       const newPlace = this.places.find(p => p.id === newPlaceId);
       if (!newPlace) return;
 
       const comparison: Comparison = {
         aId: newPlaceId,
-        bId: rankedPlaces[mid].id,
+        bId: rankedPlaces[mid]?.id || this.binaryInsertion.currentOpponentId!,
         result: choice === 'tie' ? 'tie' : choice === 'new' ? 'a' : 'b',
         date: new Date().toISOString()
       };

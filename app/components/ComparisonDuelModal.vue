@@ -5,12 +5,10 @@ import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { Trophy, Scale, CheckCircle2 } from '@lucide/vue';
-import { useConfetti } from '../composables/useConfetti';
 import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
-const { fireConfetti } = useConfetti();
 
 const modalRef = ref<HTMLElement | null>(null);
 const { activate, deactivate } = useFocusTrap(modalRef);
@@ -61,9 +59,6 @@ function onKeyDown(e: KeyboardEvent) {
 
 function handleChoice(choice: 'new' | 'existing' | 'tie') {
   store.handleBinaryInsertionChoice(choice);
-  if (choice !== 'tie') {
-    fireConfetti();
-  }
   if (!store.binaryInsertion.isPlacing) {
     setTimeout(() => {
       ui.closeModal();

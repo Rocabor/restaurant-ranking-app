@@ -85,25 +85,33 @@
           "{{ place.note }}"
         </p>
 
-        <!-- Tags -->
-        <div v-if="place.tags && place.tags.length > 0" class="flex flex-wrap gap-1 mt-2">
-          <span
-            v-for="tag in place.tags.slice(0, 3)"
-            :key="tag"
-            class="text-[10px] px-1.5 py-0.5 rounded bg-bg-secondary text-text-tertiary font-medium"
+        <!-- Tags + Duel Button Row -->
+        <div class="flex items-center justify-between mt-2">
+          <div v-if="place.tags && place.tags.length > 0" class="flex flex-wrap gap-1">
+            <span
+              v-for="tag in place.tags.slice(0, 3)"
+              :key="tag"
+              class="text-[10px] px-1.5 py-0.5 rounded bg-bg-secondary text-text-tertiary font-medium"
+            >
+              #{{ tag }}
+            </span>
+            <span v-if="place.tags.length > 3" class="text-[10px] text-text-tertiary">
+              +{{ place.tags.length - 3 }}
+            </span>
+          </div>
+
+          <!-- Duel Button -->
+          <button
+            v-if="place.status === 'ranked'"
+            @click.stop="startDuel"
+            class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all active:scale-95"
+            title="Compare in duel"
           >
-            #{{ tag }}
-          </span>
-          <span v-if="place.tags.length > 3" class="text-[10px] text-text-tertiary">
-            +{{ place.tags.length - 3 }}
-          </span>
+            <Scale class="w-3 h-3" />
+            <span>Duel</span>
+          </button>
         </div>
 
-      </div>
-
-      <!-- Action Arrow -->
-      <div class="shrink-0 text-text-tertiary group-hover:text-primary transition-colors self-center">
-        <ChevronRight class="w-4 h-4" />
       </div>
 
     </div>
@@ -113,19 +121,26 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
+import { useUIStore } from '../stores/ui';
 import type { Place } from '~/types';
-import { ChevronRight } from '@lucide/vue';
+import { Scale } from '@lucide/vue';
 
 const props = defineProps<{
   place: Place;
 }>();
 
 const store = usePlacesStore();
+const ui = useUIStore();
 
 const isSelected = computed(() => store.selectedPlaceId === props.place.id);
 const isHovered = computed(() => store.hoveredPlaceId === props.place.id);
 
 function getPriceGrapheme(level: number) {
   return '£'.repeat(level || 1);
+}
+
+function startDuel() {
+  store.startBinaryInsertion(props.place.id);
+  ui.openModal('duel');
 }
 </script>

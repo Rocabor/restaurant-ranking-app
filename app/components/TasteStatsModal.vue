@@ -1,16 +1,13 @@
 <!--* app\components\TasteStatsModal.vue  -->
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { BarChart3, X, Trophy, Compass, Award } from '@lucide/vue';
-import { useConfetti } from '../composables/useConfetti';
 
 const store = usePlacesStore();
 const ui = useUIStore();
-const { fireBadgeConfetti } = useConfetti();
-const previousBadges = ref<boolean[]>([]);
 
 const topPick = computed(() => {
   return store.rankedPlaces.find(p => p.rank === 1) || null;
@@ -114,16 +111,6 @@ function filterByArea(areaName: string) {
   store.selectedStatus = 'all';
   ui.closeModal();
 }
-
-watch(() => badges.value.map(b => b.unlocked), (newVal, oldVal) => {
-  if (oldVal && oldVal.length > 0) {
-    const newlyUnlocked = newVal.filter((v, i) => v && !oldVal[i]);
-    if (newlyUnlocked.length > 0) {
-      fireBadgeConfetti();
-    }
-  }
-  previousBadges.value = [...newVal];
-});
 </script>
 
 <template>

@@ -33,7 +33,7 @@ if (typeof window !== 'undefined') {
     const place = store.places.find(p => p.id === id);
     if (place && place.status === 'want') {
       store.togglePlaceStatus(id, () => ui.openModal('duel'));
-    } else {
+    } else if (place) {
       store.startBinaryInsertion(id);
       ui.openModal('duel');
     }
@@ -106,29 +106,121 @@ watch(() => store.filteredPlaces, () => {
 }, { deep: true });
 
 watch(() => store.selectedPlaceId, (id) => {
-  if (!id || !map) return;
+  if (!map) return;
+  if (!id) {
+    highlightMarker(null);
+    return;
+  }
   const marker = markersMap.get(id);
   if (marker) {
     const latLng = marker.getLatLng();
-    map.panTo(latLng, { animate: true, duration: 0.5 });
-    marker.openPopup();
+    map.stop();
+    map.setView(latLng, Math.max(map.getZoom(), 15), { animate: true, duration: 0.4 });
+    highlightMarker(id);
+    setTimeout(() => marker.openPopup(), 150);
   }
-  highlightMarker(id);
 });
 
 watch(() => store.hoveredPlaceId, (id) => {
   highlightMarker(id || store.selectedPlaceId);
 });
 
+function createMarkerIcon(place: any, isSelected: boolean) {
+  const isRanked = place.status === 'ranked' && place.rank !== null;
+  const isTopPick = isRanked && place.rank === 1;
+
+  const pinClass = isTopPick
+    ? 'tastemap-pin-inner tastemap-pin-top bg-emerald-600 text-white'
+    : isRanked
+      ? 'tastemap-pin-inner bg-emerald-600 text-white'
+      : 'tastemap-pin-inner bg-amber-500 text-white';
+
+  const innerContent = isRanked
+    ? `<span class="tastemap-pin-num">${place.rank}</span>`
+    : `<span class="tastemap-pin-num">★</span>`;
+
+  const iconHtml = `<div class="tastemap-pin"><div class="${pinClass}">${innerContent}</div></div>`;
+  const wrapperClass = `tastemap-marker-wrapper${isSelected ? ' is-active' : ''}`;
+
+  return L.divIcon({
+    html: iconHtml,
+    className: wrapperClass,
+    iconSize: [36, 44],
+    iconAnchor: [18, 44]
+  });
+}
+
+function createPopupHtml(place: any) {
+  const isRanked = place.status === 'ranked' && place.rank !== null;
+  const priceString = '£'.repeat(place.priceLevel);
+  const isDark = ui.isDarkMode;
+
+  const bg = isDark ? '#1c1917' : '#ffffff';
+  const bgSecondary = isDark ? '#292524' : '#f5f5f4';
+  const bgTertiary = isDark ? '#44403c' : '#e7e5e4';
+  const textPrimary = isDark ? '#fafaf9' : '#1c1917';
+  const textSecondary = isDark ? '#a8a29e' : '#57534e';
+  const textTertiary = isDark ? '#78716c' : '#a8a29e';
+  const border = isDark ? '#44403c' : '#e7e5e4';
+  const primary = isDark ? '#34d399' : '#059669';
+  const primaryHover = isDark ? '#6ee7b7' : '#047857';
+  const primaryBg = isDark ? 'rgba(52,211,153,0.15)' : 'rgba(5,150,105,0.08)';
+  const amber = isDark ? '#fbbf24' : '#d97706';
+  const amberBg = isDark ? 'rgba(251,191,36,0.15)' : 'rgba(217,119,6,0.08)';
+
+  return `
+    <div style="padding:14px;min-width:220px;max-width:260px;font-family:'Switzer',system-ui,sans-serif;background:${bg};color:${textPrimary};border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,${isDark ? '0.5' : '0.12'});">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;${isRanked ? `background:${primary};color:#fff;` : `background:${amberBg};color:${amber};border:1px solid ${border};`}">
+          ${isRanked ? `#${place.rank} Ranked` : '★ Want to Try'}
+        </span>
+        <span style="font-weight:700;font-size:12px;color:${primary};">${priceString}</span>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <div style="font-family:'Bespoke Serif',Georgia,serif;font-weight:700;font-size:15px;line-height:1.2;color:${textPrimary};margin-bottom:2px;">${place.name}</div>
+        <div style="font-size:11px;color:${textSecondary};font-weight:500;">${place.cuisine} • ${place.area}</div>
+      </div>
+
+      ${place.specialty ? `
+        <div style="padding:8px 10px;border-radius:10px;background:${bgSecondary};border:1px solid ${border};margin-bottom:8px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${textTertiary};margin-bottom:2px;">⭐ Signature Dish</div>
+          <div style="font-size:11px;color:${textSecondary};font-style:italic;line-height:1.4;">"${place.specialty}"</div>
+        </div>
+      ` : ''}
+
+      <div style="display:flex;gap:6px;padding-top:10px;border-top:1px solid ${border};">
+        <button onclick="window.tastemapOpenPlace('${place.id}')"
+          style="flex:1;padding:8px 10px;border-radius:10px;background:${primary};color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;box-shadow:0 2px 8px ${primary}33;"
+          onmouseover="this.style.background='${primaryHover}'"
+          onmouseout="this.style.background='${primary}'">
+          View Details
+        </button>
+        <button onclick="window.tastemapSharePlace('${place.id}')"
+          style="padding:8px 10px;border-radius:10px;background:${primaryBg};color:${primary};border:1px solid ${border};font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;"
+          onmouseover="this.style.background='${primary}';this.style.color='#fff'"
+          onmouseout="this.style.background='${primaryBg}';this.style.color='${primary}'"
+          title="Share">
+          ➜          
+        </button>
+        <button onclick="window.tastemapStartDuel('${place.id}')"
+          style="padding:8px 10px;border-radius:10px;background:${bgSecondary};color:${textPrimary};border:1px solid ${border};font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;"
+          onmouseover="this.style.background='${bgTertiary}'"
+          onmouseout="this.style.background='${bgSecondary}'"
+          title="Compare in Duel">
+          ⚔️
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 function highlightMarker(activeId: string | null) {
   markersMap.forEach((marker, id) => {
-    const el = marker.getElement();
-    if (el) {
-      if (id === activeId) {
-        el.classList.add('is-active');
-      } else {
-        el.classList.remove('is-active');
-      }
+    if (id === activeId) {
+      marker.setIcon(createMarkerIcon(store.places.find(p => p.id === id), true));
+    } else {
+      marker.setIcon(createMarkerIcon(store.places.find(p => p.id === id), false));
     }
   });
 }
@@ -147,105 +239,24 @@ function updateMarkers() {
     const latLng: [number, number] = [place.lat, place.lng];
     bounds.extend(latLng);
 
-    const isRanked = place.status === 'ranked' && place.rank !== null;
-    const isTopPick = isRanked && place.rank === 1;
+    const isSelected = store.selectedPlaceId === place.id;
+    const customIcon = createMarkerIcon(place, isSelected);
 
-    const pinClass = isTopPick
-      ? 'tastemap-pin-inner tastemap-pin-top bg-emerald-600 text-white'
-      : isRanked
-        ? 'tastemap-pin-inner bg-emerald-600 text-white'
-        : 'tastemap-pin-inner bg-amber-500 text-white';
-
-    const innerContent = isRanked
-      ? `<span class="tastemap-pin-num">${place.rank}</span>`
-      : `<span class="tastemap-pin-num">★</span>`;
-
-    const iconHtml = `<div class="tastemap-pin"><div class="${pinClass}">${innerContent}</div></div>`;
-
-    const customIcon = L.divIcon({
-      html: iconHtml,
-      className: 'tastemap-marker-wrapper',
-      iconSize: [36, 36],
-      iconAnchor: [18, 36]
-    });
-
-    const marker = L.marker(latLng, { 
+    const marker = L.marker(latLng, {
       icon: customIcon,
       keyboard: true,
       title: `${place.name}, ${place.cuisine}, ${place.area}, ${place.status === 'ranked' ? `ranked #${place.rank}` : 'want to try'}`
     });
 
-    const priceString = '£'.repeat(place.priceLevel);
-    const isDark = ui.isDarkMode;
-
-    const bg = isDark ? '#1c1917' : '#ffffff';
-    const bgSecondary = isDark ? '#292524' : '#f5f5f4';
-    const bgTertiary = isDark ? '#44403c' : '#e7e5e4';
-    const textPrimary = isDark ? '#fafaf9' : '#1c1917';
-    const textSecondary = isDark ? '#a8a29e' : '#57534e';
-    const textTertiary = isDark ? '#78716c' : '#a8a29e';
-    const border = isDark ? '#44403c' : '#e7e5e4';
-    const primary = isDark ? '#34d399' : '#059669';
-    const primaryHover = isDark ? '#6ee7b7' : '#047857';
-    const primaryBg = isDark ? 'rgba(52,211,153,0.15)' : 'rgba(5,150,105,0.08)';
-    const amber = isDark ? '#fbbf24' : '#d97706';
-    const amberBg = isDark ? 'rgba(251,191,36,0.15)' : 'rgba(217,119,6,0.08)';
-
-    const popupHtml = `
-      <div style="padding:14px;min-width:220px;max-width:260px;font-family:'Switzer',system-ui,sans-serif;background:${bg};color:${textPrimary};border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,${isDark ? '0.5' : '0.12'});">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;${isRanked ? `background:${primary};color:#fff;` : `background:${amberBg};color:${amber};border:1px solid ${border};`}">
-            ${isRanked ? `#${place.rank} Ranked` : '★ Want to Try'}
-          </span>
-          <span style="font-weight:700;font-size:12px;color:${primary};">${priceString}</span>
-        </div>
-
-        <div style="margin-bottom:8px;">
-          <div style="font-family:'Bespoke Serif',Georgia,serif;font-weight:700;font-size:15px;line-height:1.2;color:${textPrimary};margin-bottom:2px;">${place.name}</div>
-          <div style="font-size:11px;color:${textSecondary};font-weight:500;">${place.cuisine} • ${place.area}</div>
-        </div>
-
-        ${place.specialty ? `
-          <div style="padding:8px 10px;border-radius:10px;background:${bgSecondary};border:1px solid ${border};margin-bottom:8px;">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${textTertiary};margin-bottom:2px;">⭐ Signature Dish</div>
-            <div style="font-size:11px;color:${textSecondary};font-style:italic;line-height:1.4;">"${place.specialty}"</div>
-          </div>
-        ` : ''}
-
-        <div style="display:flex;gap:6px;padding-top:10px;border-top:1px solid ${border};">
-          <button onclick="window.tastemapOpenPlace('${place.id}')"
-            style="flex:1;padding:8px 10px;border-radius:10px;background:${primary};color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;box-shadow:0 2px 8px ${primary}33;"
-            onmouseover="this.style.background='${primaryHover}'"
-            onmouseout="this.style.background='${primary}'">
-            View Details
-          </button>
-          <button onclick="window.tastemapSharePlace('${place.id}')"
-            style="padding:8px 10px;border-radius:10px;background:${primaryBg};color:${primary};border:1px solid ${border};font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;"
-            onmouseover="this.style.background='${primary}';this.style.color='#fff'"
-            onmouseout="this.style.background='${primaryBg}';this.style.color='${primary}'"
-            title="Share">
-            ➜          
-          </button>
-          <button onclick="window.tastemapStartDuel('${place.id}')"
-            style="padding:8px 10px;border-radius:10px;background:${bgSecondary};color:${textPrimary};border:1px solid ${border};font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;"
-            onmouseover="this.style.background='${bgTertiary}'"
-            onmouseout="this.style.background='${bgSecondary}'"
-            title="Compare in Duel">
-            ⚔️
-          </button>
-        </div>
-      </div>
-    `;
-
-    marker.bindPopup(popupHtml, {
+    marker.bindPopup(createPopupHtml(place), {
       closeButton: false,
       offset: [0, -28],
       autoPanPadding: [20, 20]
     });
 
     marker.on('click', () => {
+      store.selectPlace(place.id);
       marker.openPopup();
-      highlightMarker(place.id);
     });
 
     marker.on('mouseover', () => {
@@ -262,6 +273,14 @@ function updateMarkers() {
 
   if (store.filteredPlaces.length > 0 && bounds.isValid()) {
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+  }
+
+  if (store.selectedPlaceId) {
+    const selectedMarker = markersMap.get(store.selectedPlaceId);
+    if (selectedMarker) {
+      selectedMarker.openPopup();
+      map.panTo(selectedMarker.getLatLng(), { animate: true, duration: 0.5 });
+    }
   }
 }
 

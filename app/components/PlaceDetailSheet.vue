@@ -3,12 +3,10 @@ import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { X, Trophy, Plus, MapPin, Globe, ExternalLink, Edit3, Trash2, CheckCircle2, Share2 } from '@lucide/vue';
-import { useConfetti } from '../composables/useConfetti';
 import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
-const { fireConfetti, fireTopPickConfetti } = useConfetti();
 
 const sheetRef = ref<HTMLElement | null>(null);
 const { activate, deactivate } = useFocusTrap(sheetRef);
@@ -61,15 +59,7 @@ function incrementVisit() {
 
 function markAsVisited() {
   if (place.value) {
-    const wasWant = place.value.status === 'want';
     store.togglePlaceStatus(place.value.id, () => ui.openModal('duel'));
-    if (wasWant) {
-      fireConfetti();
-      const updatedPlace = store.places.find(p => p.id === place.value?.id);
-      if (updatedPlace?.rank === 1) {
-        setTimeout(() => fireTopPickConfetti(), 500);
-      }
-    }
   }
 }
 
@@ -198,7 +188,7 @@ function confirmDelete() {
           <!-- If Ranked: Re-rank or Add Visit -->
           <div v-else class="flex gap-2">
             <button
-              @click="store.startDuel(place.id)"
+              @click="store.startBinaryInsertion(place.id); ui.openModal('duel')"
               class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-1.5"
             >
               <Trophy class="w-3.5 h-3.5" />

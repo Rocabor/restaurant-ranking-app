@@ -12,7 +12,6 @@ interface ConfirmModalData {
 }
 
 interface UIState {
-  searchQuery: string;
   isDarkMode: boolean;
   activeModal: ModalType;
   currentUser: { email: string } | null;
@@ -25,7 +24,6 @@ interface UIState {
 
 export const useUIStore = defineStore('ui', {
   state: (): UIState => ({
-    searchQuery: '',
     isDarkMode: false,
     activeModal: null,
     currentUser: null,

@@ -1,274 +1,269 @@
+<!--* app\components\LandingPage.vue  -->
+
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
-import { MapPin, ListOrdered, BarChart3, Sparkles, Star } from '@lucide/vue';
+import Navbar from '../components/Navbar.vue';
+import AuthModal from '../components/AuthModal.vue';
+import { Sparkles, MapPin, Trophy, Dices, Share2, ChevronRight, ArrowRight, Utensils, Plus } from '@lucide/vue';
 
+const store = usePlacesStore();
 const ui = useUIStore();
+const router = useRouter();
 
-const features = [
-  {
-    icon: MapPin,
-    title: 'Map Your City',
-    description: 'Every place you\'ve eaten, every place you want to try — all on one beautiful map.',
-  },
-  {
-    icon: ListOrdered,
-    title: 'Honest Rankings',
-    description: 'No more inflated star ratings. Compare places head-to-head and build a ranking you actually trust.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Taste Stats',
-    description: 'See your eating life at a glance — cuisines explored, neighbourhoods covered, price spread.',
-  },
-  {
-    icon: Sparkles,
-    title: 'Decide Instantly',
-    description: '"Where should we eat?" — let the app pick from your list based on mood, price, and location.',
-  },
-];
+const topRankedPreview = computed(() => {
+  return store.rankedPlaces.slice(0, 3);
+});
 
-function handleSignIn() {
-  ui.openModal('auth');
+function openDemoDuel() {
+  router.push('/mapa');
 }
 
-function handleTryAsGuest() {
-  ui.hideLanding();
+function openPlaceOnMap(id: string) {
+  store.selectPlace(id);
+  router.push('/mapa');
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-bg-primary">
-    <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-bg-primary/80 backdrop-blur-md border-b border-border">
-      <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <MapPin class="w-4 h-4 text-white" />
-          </div>
-          <span class="font-display text-xl font-semibold text-text-primary">Tastemap</span>
-        </div>
-        <div class="flex items-center gap-4">
-          <button
-            @click="handleSignIn"
-            class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
-          >
-            Sign In
-          </button>
-          <button
-            @click="handleTryAsGuest"
-            class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-full hover:bg-primary-hover transition-colors"
-          >
-            Try as Guest
-          </button>
-        </div>
-      </div>
-    </header>
+  <div class="min-h-screen bg-bg-primary text-text-primary flex flex-col font-sans selection:bg-primary-subtle selection:text-primary">
+    <!-- Top Navbar -->
+    <Navbar />
 
     <!-- Hero Section -->
-    <section class="pt-32 pb-12 px-6">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-text-primary leading-tight mb-6">
-          Star ratings are useless.<br />
-          <span class="text-primary">Rank where you actually eat.</span>
+    <section class="relative pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 overflow-hidden border-b border-border bg-linear-to-b from-surface to-bg-primary">
+      <!-- Subtle Background Decorative Blurs -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-150 h-75 bg-primary/5 dark:bg-primary/10 blur-3xl rounded-full pointer-events-none"></div>
+
+      <div class="max-w-5xl mx-auto text-center space-y-6 relative z-10">
+        <!-- Category Pill Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-subtle border border-primary/20 text-primary text-xs font-bold tracking-wide shadow-xs animate-fade-in">
+          <Sparkles class="w-3.5 h-3.5" />
+          <span>Your Food Journal & Personal Ranking</span>
+        </div>
+
+        <!-- Main Title -->
+        <h1 class="font-serif font-bold text-4xl sm:text-5xl md:text-6xl text-text-primary tracking-tight leading-[1.15] max-w-4xl mx-auto">
+          Your favorite restaurants, ranked by honest
+          <span class="text-primary italic underline decoration-highlight decoration-wavy decoration-2">taste duels</span>
+          .
         </h1>
-        <p class="text-xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
-          Tastemap is your personal map and honestly-ranked list of every place you've eaten — 
-          and every place you still want to try.
+
+        <!-- Subtitle -->
+        <p class="text-base sm:text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed font-medium">
+          Say goodbye to messy lists in your notes app or saving spots on Google Maps without context. Rank restaurants through head-to-head 1v1 comparisons, locate them on the map, and get instant
+          inspiration for your next meal out.
         </p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+
+        <!-- CTA Buttons Group -->
+        <div class="pt-4 flex flex-wrap items-center justify-center gap-3.5">
           <button
-            @click="handleSignIn"
-            class="px-6 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-all shadow-lg hover:shadow-xl active:scale-95"
-          >
-            Sign Up
+            @click="ui.openModal('auth')"
+            class="px-6 py-3.5 rounded-2xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center gap-2 active:scale-95">
+            <span>Sign Up Free</span>
+            <ChevronRight class="w-4 h-4 opacity-80" />
           </button>
-          <button
-            @click="handleTryAsGuest"
-            class="px-6 py-3 bg-surface text-text-primary font-semibold rounded-full border border-border hover:border-primary transition-all active:scale-95"
-          >
-            Try as Guest
-          </button>
+
+          <router-link
+            to="/mapa"
+            class="px-6 py-3.5 rounded-2xl bg-surface hover:bg-bg-secondary border border-border text-text-primary font-bold text-sm transition-all flex items-center gap-2 active:scale-95 shadow-xs">
+            <MapPin class="w-4 h-4 text-highlight-strong" />
+            <span>Try as Guest</span>
+          </router-link>
         </div>
-      </div>
-    </section>
 
-    <!-- Map Preview -->
-    <section class="px-6 pb-12">
-      <div class="max-w-4xl mx-auto">
-        <div class="relative rounded-xl overflow-hidden shadow-xl border border-border bg-bg-secondary">
-          <!-- Map Background Simulation -->
-          <div class="aspect-[16/9] relative overflow-hidden">
-            <!-- Simulated Map Grid -->
-            <div class="absolute inset-0 opacity-10">
-              <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5"/>
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-              </svg>
+        <!-- Quick Stats Banner -->
+        <div class="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div class="p-3.5 rounded-2xl bg-surface/80 border border-border text-center shadow-2xs">
+            <div class="font-serif font-bold text-2xl text-primary">
+              {{ store.rankedPlaces?.length || 0 }}
             </div>
-
-            <!-- Simulated Map Pins -->
-            <div class="absolute inset-0">
-              <!-- Ranked Pins -->
-              <div class="absolute top-[25%] left-[20%] group cursor-pointer">
-                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg transform hover:scale-110 transition-transform">
-                  1
-                </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-md text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                  Brat — #1
-                </div>
-              </div>
-
-              <div class="absolute top-[35%] right-[30%] group cursor-pointer">
-                <div class="w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg transform hover:scale-110 transition-transform">
-                  2
-                </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-md text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                  Clove Club — #2
-                </div>
-              </div>
-
-              <!-- Want to Try Pin -->
-              <div class="absolute bottom-[35%] right-[20%] group cursor-pointer">
-                <div class="w-7 h-7 bg-highlight rounded-full flex items-center justify-center text-white shadow-lg transform hover:scale-110 transition-transform">
-                  <Star class="w-3 h-3" fill="currentColor" />
-                </div>
-                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded shadow-md text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                  Dishoom — Want to try
-                </div>
-              </div>
-            </div>
-
-            <!-- Legend -->
-            <div class="absolute bottom-3 left-3 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow border border-gray-200 dark:border-gray-700">
-              <div class="flex items-center gap-3 text-xs">
-                <div class="flex items-center gap-1.5">
-                  <div class="w-4 h-4 bg-emerald-600 rounded-full flex items-center justify-center text-white text-[8px] font-bold">1</div>
-                  <span class="text-gray-600 dark:text-gray-400">Ranked</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <div class="w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-white">
-                    <Star class="w-2.5 h-2.5" fill="currentColor" />
-                  </div>
-                  <span class="text-gray-600 dark:text-gray-400">Want to try</span>
-                </div>
-              </div>
-            </div>
+            <div class="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">In Your Top</div>
           </div>
-        </div>
 
-        <!-- Caption -->
-        <p class="text-center text-sm text-text-tertiary mt-4">
-          Every pin tells a story. Green pins show your ranked favourites, amber pins are places waiting to be explored.
-        </p>
-      </div>
-    </section>
-
-    <!-- Features -->
-    <section class="px-6 py-20 bg-bg-secondary">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="font-display text-3xl md:text-4xl font-semibold text-text-primary text-center mb-16">
-          Everything you need to map your taste
-        </h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div
-            v-for="feature in features"
-            :key="feature.title"
-            class="bg-surface rounded-xl p-6 border border-border hover:border-primary/50 transition-colors"
-          >
-            <div class="w-12 h-12 rounded-lg bg-primary-subtle flex items-center justify-center mb-4">
-              <component :is="feature.icon" class="w-6 h-6 text-primary" />
+          <div class="p-3.5 rounded-2xl bg-surface/80 border border-border text-center shadow-2xs">
+            <div class="font-serif font-bold text-2xl text-highlight-strong">
+              {{ store.wantToTry?.length || 0 }}
             </div>
-            <h3 class="font-semibold text-text-primary mb-2">{{ feature.title }}</h3>
-            <p class="text-sm text-text-secondary leading-relaxed">{{ feature.description }}</p>
+            <div class="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">To Try</div>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-surface/80 border border-border text-center shadow-2xs">
+            <div class="font-serif font-bold text-2xl text-text-primary">100%</div>
+            <div class="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">Your Own Taste</div>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-surface/80 border border-border text-center shadow-2xs">
+            <div class="font-serif font-bold text-2xl text-primary">1v1</div>
+            <div class="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">Duel Algorithm</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- How It Works -->
-    <section class="px-6 py-20">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="font-display text-3xl md:text-4xl font-semibold text-text-primary text-center mb-16">
-          How it works
-        </h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
-            <h3 class="font-semibold text-text-primary mb-2">Add places</h3>
-            <p class="text-sm text-text-secondary">Log everywhere you eat and everywhere you want to try.</p>
-          </div>
-          <div class="text-center">
-            <div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
-            <h3 class="font-semibold text-text-primary mb-2">Compare</h3>
-            <p class="text-sm text-text-secondary">Answer quick "which was better?" questions to build your honest ranking.</p>
-          </div>
-          <div class="text-center">
-            <div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
-            <h3 class="font-semibold text-text-primary mb-2">Decide</h3>
-            <p class="text-sm text-text-secondary">Never ask "where should we eat?" again — your map has the answer.</p>
-          </div>
-        </div>
+    <!-- Key Features Section -->
+    <section class="py-16 px-4 sm:px-6 max-w-6xl mx-auto w-full space-y-12">
+      <div class="text-center space-y-2">
+        <h2 class="font-serif font-bold text-3xl sm:text-4xl text-text-primary">Everything you need for your foodie life</h2>
+        <p class="text-sm text-text-tertiary max-w-xl mx-auto font-medium">Tools designed for foodies who value honesty and great meals.</p>
       </div>
-    </section>
 
-    <!-- Social Proof -->
-    <section class="px-6 py-16 bg-bg-secondary">
-      <div class="max-w-4xl mx-auto">
-        <div class="bg-surface rounded-2xl p-8 md:p-12 border border-border shadow-lg">
-          <div class="text-center mb-8">
-            <p class="text-lg text-text-secondary italic">
-              "I used to have 500 places saved on Google Maps and never knew where to actually go. Tastemap changed that."
+      <!-- Grid of 4 Core Pillars -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Feature 1: Duelo de Sabor -->
+        <div class="p-6 rounded-3xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm space-y-4 group">
+          <div class="p-3 rounded-2xl bg-primary-subtle text-primary w-fit">
+            <Trophy class="w-6 h-6" />
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-serif font-bold text-xl text-text-primary group-hover:text-primary transition-colors">1v1 Duel Ranking</h3>
+            <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+              Rating spots on a 1-10 scale is confusing. In Tastemap, you compare two restaurants at a time: which one do you prefer? The system automatically places each new spot in its exact ranking
+              position.
             </p>
           </div>
-          <div class="flex items-center justify-center gap-8 text-sm text-text-tertiary">
-            <div class="text-center">
-              <p class="font-serif font-bold text-2xl text-text-primary">32</p>
-              <p>Sample places</p>
+        </div>
+
+        <!-- Feature 2: Mapa Interactivo -->
+        <div class="p-6 rounded-3xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm space-y-4 group">
+          <div class="p-3 rounded-2xl bg-primary-subtle text-primary w-fit">
+            <MapPin class="w-6 h-6" />
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-serif font-bold text-xl text-text-primary group-hover:text-primary transition-colors">Geolocated Map & Filters</h3>
+            <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+              Locate your restaurants on the map in real time. Filter by cuisine type (Italian, Asian, Tacos...), neighborhood, or price point with a single tap to see what's nearby.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 3: Ruleta Decisora -->
+        <div class="p-6 rounded-3xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm space-y-4 group">
+          <div class="p-3 rounded-2xl bg-(--color-highlight-subtle) text-highlight-strong w-fit">
+            <Dices class="w-6 h-6" />
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-serif font-bold text-xl text-text-primary group-hover:text-primary transition-colors">"Where to Eat Today?" Wheel</h3>
+            <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+              Can't decide on dinner? Filter by your "To Try" list or "Favorites" and let the interactive spinner pick the ideal spot—argument free.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 4: Fichas Sociales -->
+        <div class="p-6 rounded-3xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm space-y-4 group">
+          <div class="p-3 rounded-2xl bg-primary-subtle text-primary w-fit">
+            <Share2 class="w-6 h-6" />
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="font-serif font-bold text-xl text-text-primary group-hover:text-primary transition-colors">Sharable Recommendation Cards</h3>
+            <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+              Share recommendations directly in WhatsApp or Telegram groups, or Instagram Stories, with elegantly formatted cards featuring top dishes and notes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Preview Showcase Section -->
+    <section class="py-12 px-4 sm:px-6 bg-bg-secondary border-y border-border">
+      <div class="max-w-5xl mx-auto space-y-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-primary uppercase tracking-wider">Live Preview</span>
+            <h2 class="font-serif font-bold text-2xl sm:text-3xl text-text-primary mt-1">Your Current Foodie Top</h2>
+            <p class="text-xs text-text-tertiary font-medium">Here are some of the highest rated places in your collection</p>
+          </div>
+
+          <router-link
+            to="/mapa"
+            class="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold w-fit hover:bg-primary-hover transition-all flex items-center gap-1.5">
+            <span>View full map ({{ store.places?.length || 0 }} restaurants)</span>
+            <ChevronRight class="w-3.5 h-3.5" />
+          </router-link>
+        </div>
+
+        <!-- Mini Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            v-for="place in topRankedPreview"
+            :key="place.id"
+            @click="openPlaceOnMap(place.id)"
+            class="p-4 rounded-2xl bg-surface border border-border hover:border-primary transition-all cursor-pointer shadow-xs space-y-2 group">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-primary text-white">Rank #{{ place.rank }}</span>
+              <span class="text-xs font-bold text-primary">
+                {{ '£'.repeat(place.priceLevel) }}
+              </span>
             </div>
-            <div class="w-px h-8 bg-border"></div>
-            <div class="text-center">
-              <p class="font-serif font-bold text-2xl text-text-primary">25</p>
-              <p>Comparisons made</p>
-            </div>
-            <div class="w-px h-8 bg-border"></div>
-            <div class="text-center">
-              <p class="font-serif font-bold text-2xl text-text-primary">10+</p>
-              <p>Cuisines covered</p>
+
+            <h4 class="font-serif font-bold text-lg text-text-primary group-hover:text-primary transition-colors leading-tight">
+              {{ place.name }}
+            </h4>
+
+            <p class="text-xs text-text-tertiary font-medium">
+              📍 {{ place.area }} •
+              <span class="text-primary font-semibold">{{ place.cuisine }}</span>
+            </p>
+
+            <div v-if="place.specialty" class="text-xs text-text-secondary italic bg-bg-secondary p-2 rounded-lg border border-border">
+              ⭐ "{{ place.specialty }}"
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="px-6 py-16">
-      <div class="max-w-2xl mx-auto text-center">
-        <h2 class="font-display text-3xl font-semibold text-text-primary mb-4">
-          Ready to map your taste?
-        </h2>
-        <p class="text-sm text-text-secondary mb-6">
-          No credit card required. Guest data is session-based only.
-        </p>
+    <!-- Bottom CTA Banner -->
+    <section class="py-16 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-6">
+      <div class="p-8 sm:p-12 rounded-3xl bg-surface border border-border shadow-xl space-y-6 relative overflow-hidden">
+        <div class="w-12 h-12 rounded-full bg-primary-subtle text-primary flex items-center justify-center mx-auto shadow-sm">
+          <Utensils class="w-6 h-6" />
+        </div>
+
+        <div class="space-y-2 max-w-2xl mx-auto">
+          <h2 class="font-serif font-bold text-2xl sm:text-3xl text-text-primary">Ready to build your personal restaurant map?</h2>
+          <p class="text-xs sm:text-sm text-text-secondary">Add your first restaurant, test it in a duel, and share your top discoveries with friends.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <button
+            @click="ui.openModal('auth')"
+            class="px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-2">
+            <span>Sign Up Free</span>
+          </button>
+
+          <router-link
+            to="/mapa"
+            class="px-5 py-3 rounded-xl bg-bg-secondary hover:bg-bg-tertiary border border-border text-text-primary font-bold text-xs transition-all active:scale-95 flex items-center gap-2">
+            <MapPin class="w-4 h-4 text-primary" />
+            <span>Try as Guest</span>
+          </router-link>
+        </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="px-6 py-8 border-t border-border">
-      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer class="mt-auto py-6 border-t border-border bg-surface text-center text-xs text-text-tertiary font-medium">
+      <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-            <MapPin class="w-3 h-3 text-white" />
-          </div>
-          <span class="font-display text-sm font-semibold text-text-primary">Tastemap</span>
+          <div class="w-6 h-6 rounded-full bg-primary text-white font-serif font-bold text-xs flex items-center justify-center">T</div>
+          <span class="font-serif font-bold text-sm text-text-primary">Tastemap</span>
+          <span>— Your personal food journal</span>
         </div>
-        <p class="text-sm text-text-tertiary">
-          Built with care for honest food opinions.
-        </p>
+
+        <div class="flex items-center gap-4 text-[11px]">
+          <router-link to="/mapa" class="hover:text-primary transition-colors">Map</router-link>
+          <router-link to="/mapa" class="hover:text-primary transition-colors">Where to eat?</router-link>
+          <router-link to="/mapa" class="hover:text-primary transition-colors">Stats</router-link>
+          <router-link to="/mapa" class="hover:text-primary transition-colors">Share</router-link>
+        </div>
       </div>
     </footer>
+
+    <!-- Auth Modal -->
+    <AuthModal />
   </div>
 </template>

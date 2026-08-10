@@ -13,7 +13,7 @@ const ui = useUIStore();
 
 const hasActiveFilters = computed(() => {
   return Boolean(
-    ui.searchQuery ||
+    store.searchQuery ||
     store.selectedCuisine !== 'all' ||
     store.selectedStatus !== 'all' ||
     store.selectedPrice !== null ||
@@ -65,7 +65,7 @@ const hasActiveFilters = computed(() => {
       <div class="flex items-center justify-between gap-2">
         <div>
           <h2 class="font-serif font-bold text-xl text-text-primary leading-tight">
-            Your Tables
+            Your Top Tables
           </h2>
           <p class="text-xs text-text-tertiary font-medium mt-0.5">
             {{ store.rankedPlaces.length }} visited • {{ store.wantToTry.length }} to try
@@ -116,25 +116,24 @@ const hasActiveFilters = computed(() => {
         </button>
       </div>
 
-      <!-- Scrollable Cuisine Filter Chips -->
-      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs font-medium">
-        <button
-          @click="store.selectedCuisine = 'all'"
-          class="px-2.5 py-1 rounded-full whitespace-nowrap transition-all"
-          :class="store.selectedCuisine === 'all' ? 'bg-primary text-white shadow-sm' : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary'"
+      <!-- Cuisine Filter -->
+      <div>
+        <label class="block text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-1.5">
+          Cuisine
+        </label>
+        <select
+          v-model="store.selectedCuisine"
+          class="w-full text-xs bg-bg-secondary text-text-secondary border border-border rounded-lg px-2.5 py-1.5 font-medium focus:outline-none focus:border-primary cursor-pointer"
         >
-          All Cuisines
-        </button>
-
-        <button
-          v-for="cuisine in store.allCuisines"
-          :key="cuisine"
-          @click="store.selectedCuisine = cuisine"
-          class="px-2.5 py-1 rounded-full whitespace-nowrap transition-all"
-          :class="store.selectedCuisine === cuisine ? 'bg-primary text-white shadow-sm' : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary'"
-        >
-          {{ cuisine }}
-        </button>
+          <option value="all">All Cuisines ({{ store.places.length }})</option>
+          <option
+            v-for="cuisine in store.allCuisines"
+            :key="cuisine"
+            :value="cuisine"
+          >
+            {{ cuisine }}
+          </option>
+        </select>
       </div>
 
     </div>
@@ -151,6 +150,19 @@ const hasActiveFilters = computed(() => {
           <option value="dateAdded">Sort: Recent</option>
           <option value="visits">Sort: Visits</option>
           <option value="priceLevel">Sort: Price</option>
+        </select>
+        <select
+          v-model="store.selectedCuisine"
+          class="flex-1 text-xs bg-bg-secondary text-text-secondary border border-border rounded-lg px-2.5 py-2 font-medium focus:outline-none focus:border-primary cursor-pointer"
+        >
+          <option value="all">All Cuisines</option>
+          <option
+            v-for="cuisine in store.allCuisines"
+            :key="cuisine"
+            :value="cuisine"
+          >
+            {{ cuisine }}
+          </option>
         </select>
       </div>
 
