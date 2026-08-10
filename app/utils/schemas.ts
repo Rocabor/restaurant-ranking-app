@@ -47,3 +47,27 @@ export const PlaceSchema = z.object({
   places: z.array(singlePlaceSchema),
   comparisons: z.array(singleComparisonSchema),
 });
+
+export const placeFormSchema = z.object({
+  name: z.string().min(1, 'Restaurant name is required'),
+  cuisine: z.string().min(1, 'Cuisine type is required'),
+  specialty: z.string().optional().default(''),
+  area: z.string().min(1, 'Neighborhood is required'),
+  address: z.string().min(1, 'Address is required'),
+  lat: z.number({ invalid_type_error: 'Latitude must be a number' }),
+  lng: z.number({ invalid_type_error: 'Longitude must be a number' }),
+  priceLevel: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+  status: z.enum(['ranked', 'want']),
+  note: z.string().optional().default(''),
+  tags: z.string().optional().default(''),
+  website: z.string().url('Must be a valid URL').or(z.literal('')).optional().default(''),
+});
+
+export type PlaceFormValues = z.infer<typeof placeFormSchema>;
+
+export const authSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+export type AuthFormValues = z.infer<typeof authSchema>;

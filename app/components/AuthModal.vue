@@ -4,30 +4,41 @@
 import { ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
-import { X, AlertCircle, CheckCircle2, Loader2,UtensilsCrossed } from '@lucide/vue';
+import { X, AlertCircle, CheckCircle2, Loader2, UtensilsCrossed } from '@lucide/vue';
+import { useForm, useField } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import { authSchema } from '~/utils/schemas';
 
 const store = usePlacesStore();
 const ui = useUIStore();
 
 const mode = ref<'login' | 'register' | 'reset'>('login');
-const email = ref('');
-const password = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
+
+const { handleSubmit, errors, resetForm } = useForm({
+  validationSchema: toTypedSchema(authSchema),
+  initialValues: {
+    email: '',
+    password: '',
+  },
+});
+
+const { value: email, errorMessage: emailError } = useField<string>('email');
+const { value: password, errorMessage: passwordError } = useField<string>('password');
 
 watch(() => ui.activeModal, (val) => {
   if (val === 'auth') {
     errorMessage.value = '';
     successMessage.value = '';
-    email.value = '';
-    password.value = '';
     isLoading.value = false;
     mode.value = 'login';
+    resetForm();
   }
 });
 
-async function handleSubmit() {
+const onSubmit = handleSubmit(async (formValues) => {
   errorMessage.value = '';
   successMessage.value = '';
   isLoading.value = true;
@@ -37,11 +48,11 @@ async function handleSubmit() {
     await new Promise(resolve => setTimeout(resolve, 800));
 
     if (mode.value === 'login') {
-      ui.setUser({ email: email.value });
+      ui.setUser({ email: formValues.email });
       successMessage.value = 'Welcome back!';
       setTimeout(() => ui.closeModal(), 1000);
     } else if (mode.value === 'register') {
-      ui.setUser({ email: email.value });
+      ui.setUser({ email: formValues.email });
       successMessage.value = 'Account created successfully. Logged in!';
       setTimeout(() => ui.closeModal(), 1000);
     } else if (mode.value === 'reset') {
@@ -52,7 +63,7 @@ async function handleSubmit() {
   } finally {
     isLoading.value = false;
   }
-}
+});
 </script>
 
 <template>
@@ -68,7 +79,7 @@ async function handleSubmit() {
       <!-- Modal Header -->
       <div class="flex items-center justify-between pb-3 border-b border-border">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-serif font-bold text-base">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-base">
           <UtensilsCrossed />
           </div>
           <div>
@@ -109,18 +120,18 @@ async function handleSubmit() {
       </div>
 
       <!-- Error / Success Alert -->
-      <div v-if="errorMessage" class="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium flex items-center gap-2">
+      <div v-if="errorMessage" class="p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-medium flex items-center gap-2">
         <AlertCircle class="w-4 h-4 shrink-0" />
         <span>{{ errorMessage }}</span>
       </div>
 
-      <div v-if="successMessage" class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium flex items-center gap-2">
+      <div v-if="successMessage" class="p-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-medium flex items-center gap-2">
         <CheckCircle2 class="w-4 h-4 shrink-0" />
         <span>{{ successMessage }}</span>
       </div>
 
       <!-- Auth Form -->
-      <form @submit.prevent="handleSubmit" class="space-y-3.5">
+      <form @submit.prevent="onSubmit" class="space-y-3.5">
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
@@ -130,9 +141,10 @@ async function handleSubmit() {
             v-model="email"
             type="email"
             placeholder="you@email.com"
-            required
-            class="w-full px-3.5 py-2.5 text-xs bg-bg-secondary border border-border rounded-xl focus:outline-none focus:border-primary text-text-primary"
+            class="w-full px-3.5 py-2.5 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
+            :class="emailError ? 'border-danger' : 'border-border'"
           />
+          <p v-if="emailError" class="text-[11px] text-danger mt-1">{{ emailError }}</p>
         </div>
 
         <div v-if="mode !== 'reset'">
@@ -153,10 +165,10 @@ async function handleSubmit() {
             v-model="password"
             type="password"
             placeholder="••••••••"
-            required
-            minlength="6"
-            class="w-full px-3.5 py-2.5 text-xs bg-bg-secondary border border-border rounded-xl focus:outline-none focus:border-primary text-text-primary"
+            class="w-full px-3.5 py-2.5 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
+            :class="passwordError ? 'border-danger' : 'border-border'"
           />
+          <p v-if="passwordError" class="text-[11px] text-danger mt-1">{{ passwordError }}</p>
         </div>
 
         <!-- Submit Button -->
