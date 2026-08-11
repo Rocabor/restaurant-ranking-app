@@ -66,9 +66,8 @@ onMounted(() => {
       </main>
 
       <!-- Detail Sheet -->
-      <PlaceDetailSheet />
-    </div>
-    <ShareModal />
+    <PlaceDetailSheet />
+  </div>
     <TasteStatsModal />
     <DeciderModal />
     <AuthModal />

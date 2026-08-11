@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
-import { X, Trophy, Plus, MapPin, Globe, ExternalLink, Edit3, Trash2, CheckCircle2, Share2 } from '@lucide/vue';
+import { X, Trophy, Plus, MapPin, Globe, ExternalLink, Edit3, Trash2, CheckCircle2 } from '@lucide/vue';
 import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
@@ -23,10 +23,10 @@ watch(isVisible, (visible) => {
   }
 });
 
-function shareThisPlace() {
-  if (place.value) {
-    store.selectedPlaceId = place.value.id;
-    ui.openModal('share');
+function onKeyDown(e: KeyboardEvent) {
+  if (!isVisible.value) return;
+  if (e.key === 'Escape') {
+    ui.closeDetailSheet();
   }
 }
 
@@ -279,14 +279,6 @@ function confirmDelete() {
 
       <!-- Footer Actions -->
       <div class="p-4 border-t border-border bg-bg-secondary flex items-center justify-between gap-2">
-        <button
-          @click="shareThisPlace"
-          class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-primary/10 text-primary hover:bg-primary hover:text-on-primary transition-all shadow-xs"
-        >
-          <Share2 class="w-3.5 h-3.5" />
-          <span>Card / Share</span>
-        </button>
-
         <div class="flex items-center gap-1.5">
           <button
             @click="openEdit"

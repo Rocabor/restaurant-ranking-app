@@ -11,7 +11,6 @@ import {
   Menu,
   Sparkles,
   BarChart3,
-  Share2,
   Sun,
   Moon,
   Plus,
@@ -87,14 +86,6 @@ function goHome() {
             title="Taste stats"
             aria-label="View taste statistics">
             <BarChart3 class="w-4 h-4" />
-          </button>
-
-          <button
-            @click="ui.openModal('share')"
-            class="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
-            title="Share or Export"
-            aria-label="Share or export your map">
-            <Share2 class="w-4 h-4" />
           </button>
         </template>
 
@@ -208,13 +199,6 @@ function goHome() {
             class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
             <BarChart3 class="w-5 h-5 text-text-secondary"/>
             <span>Stats</span>
-          </button>
-
-          <button
-            @click="ui.openModal('share'); ui.closeMenu()"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors text-left">
-            <Share2 class="w-5 h-5 text-text-secondary"/>
-            <span>Share</span>
           </button>
 
           <button
