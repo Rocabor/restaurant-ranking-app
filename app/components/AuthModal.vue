@@ -14,6 +14,7 @@ import { useFocusTrap } from '../composables/useFocusTrap';
 const store = usePlacesStore();
 const ui = useUIStore();
 const { login, register, resetPassword, loginWithGoogle } = useAuthSession();
+const router = useRouter();
 
 const isOpen = computed(() => ui.activeModal === 'auth');
 
@@ -82,15 +83,22 @@ const onSubmit = handleSubmit(async (formValues) => {
     if (mode.value === 'login') {
       await login(formValues.email, formValues.password);
       successMessage.value = 'Welcome back!';
-      setTimeout(() => ui.closeModal(), 1000);
+      setTimeout(() => {
+        ui.closeModal();
+        router.push('/mapa');
+      }, 1000);
     } else if (mode.value === 'register') {
       const { sessionCreated } = await register(formValues.email, formValues.password);
       if (sessionCreated) {
         successMessage.value = 'Account created successfully. Logged in!';
+        setTimeout(() => {
+          ui.closeModal();
+          router.push('/mapa');
+        }, 2000);
       } else {
         successMessage.value = 'Account created! Check your email to confirm before logging in.';
+        setTimeout(() => ui.closeModal(), 2000);
       }
-      setTimeout(() => ui.closeModal(), 2000);
     } else if (mode.value === 'reset') {
       await resetPassword(formValues.email);
       successMessage.value = 'A password recovery link has been sent to your email.';

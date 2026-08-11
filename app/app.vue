@@ -2,6 +2,16 @@
 import { useAuthSession } from './composables/useAuthSession';
 
 const { syncSession } = useAuthSession();
+const route = useRoute();
+const router = useRouter();
+const supabaseUser = useSupabaseUser();
+
+watch(supabaseUser, (user) => {
+  if (user && route.query.auth === 'return') {
+    router.replace('/mapa');
+  }
+}, { immediate: true });
+
 onMounted(() => {
   syncSession();
 });

@@ -23,6 +23,7 @@ interface PlacesState {
   places: Place[];
   comparisons: Comparison[];
   loading: boolean;
+  loadToken: number;
   dataSource: DataSource;
   sortBy: SortOption;
   selectedStatus: 'all' | 'ranked' | 'want';
@@ -43,6 +44,7 @@ export const usePlacesStore = defineStore('places', {
     places: [],
     comparisons: [],
     loading: false,
+    loadToken: 0,
     dataSource: 'sample',
     sortBy: 'rank',
     selectedStatus: 'all',
@@ -155,28 +157,29 @@ export const usePlacesStore = defineStore('places', {
 
   actions: {
     loadSampleData() {
+      this.loadToken += 1;
       this.loading = true;
       this.dataSource = 'sample';
-      // Simulate async load for demo
-      setTimeout(() => {
-        const result = PlaceSchema.safeParse(sampleData);
-        if (result.success) {
-          this.meta = result.data.meta;
-          this.places = result.data.places;
-          this.comparisons = result.data.comparisons;
-        } else {
-          console.error('Invalid sample data:', result.error);
-        }
-        this.loading = false;
-      }, 300);
+      const result = PlaceSchema.safeParse(sampleData);
+      if (result.success) {
+        this.meta = result.data.meta;
+        this.places = result.data.places;
+        this.comparisons = result.data.comparisons;
+      } else {
+        console.error('Invalid sample data:', result.error);
+      }
+      this.loading = false;
     },
 
     async loadUserData() {
+      const token = this.loadToken + 1;
+      this.loadToken = token;
       this.loading = true;
       this.dataSource = 'user';
       try {
         const { loadPlaces } = useSupabaseData();
         const { places, comparisons } = await loadPlaces();
+        if (token !== this.loadToken) return;
         this.places = places;
         this.comparisons = comparisons;
         const result = PlaceSchema.safeParse(sampleData);
@@ -186,7 +189,7 @@ export const usePlacesStore = defineStore('places', {
       } catch (err) {
         console.error('Failed to load user data:', err);
       } finally {
-        this.loading = false;
+        if (token === this.loadToken) this.loading = false;
       }
     },
 

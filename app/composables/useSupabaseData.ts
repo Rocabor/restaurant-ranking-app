@@ -91,7 +91,8 @@ export function useSupabaseData() {
   const user = useSupabaseUser();
 
   function currentUserId() {
-    return user.value?.id;
+    const claims = user.value as { sub?: string } | null;
+    return claims?.sub ?? user.value?.id;
   }
 
   async function loadPlaces() {
@@ -112,32 +113,36 @@ export function useSupabaseData() {
     };
   }
 
-  async function upsertPlace(place: Place) {
+  async function upsertPlace(place: Place): Promise<boolean> {
     const userId = currentUserId();
-    if (!userId) return;
+    if (!userId) return false;
     const { error } = await client.from('places').upsert(placeToRow(place, userId));
     if (error) throw error;
+    return true;
   }
 
-  async function upsertPlaces(places: Place[]) {
+  async function upsertPlaces(places: Place[]): Promise<boolean> {
     const userId = currentUserId();
-    if (!userId || places.length === 0) return;
+    if (!userId || places.length === 0) return false;
     const { error } = await client.from('places').upsert(places.map((p) => placeToRow(p, userId)));
     if (error) throw error;
+    return true;
   }
 
-  async function deletePlace(id: string) {
+  async function deletePlace(id: string): Promise<boolean> {
     const userId = currentUserId();
-    if (!userId) return;
+    if (!userId) return false;
     const { error } = await client.from('places').delete().eq('id', id).eq('user_id', userId);
     if (error) throw error;
+    return true;
   }
 
-  async function insertComparison(c: Comparison) {
+  async function insertComparison(c: Comparison): Promise<boolean> {
     const userId = currentUserId();
-    if (!userId) return;
+    if (!userId) return false;
     const { error } = await client.from('comparisons').insert({ ...comparisonToRow(c), user_id: userId });
     if (error) throw error;
+    return true;
   }
 
   return { loadPlaces, upsertPlace, upsertPlaces, deletePlace, insertComparison };

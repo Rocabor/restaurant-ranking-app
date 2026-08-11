@@ -33,7 +33,7 @@ export function useAuthSession() {
     const { data, error } = await client.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/?auth=return`,
       },
     });
     if (error) throw error;
