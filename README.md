@@ -6,8 +6,6 @@ A personal, honestly-ranked map of everywhere I've eaten — every place as a pi
 
 **Live URL:** https://tastemap-khaki.vercel.app
 
-![Tastemap landing page](./screenshot-landing.png)
-
 ![Tastemap map and ranked list](./screenshot.png)
 
 ---
