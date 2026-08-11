@@ -157,7 +157,7 @@ function goToRecommendation() {
               role="radio"
               :aria-checked="maxPrice === null"
               class="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
-              :class="maxPrice === null ? 'border-primary bg-primary text-white' : 'border-border bg-bg-secondary text-text-secondary'"
+              :class="maxPrice === null ? 'border-primary bg-primary text-on-primary' : 'border-border bg-bg-secondary text-text-secondary'"
             >
               Any
             </button>
@@ -170,7 +170,7 @@ function goToRecommendation() {
               :aria-checked="maxPrice === price"
               :aria-label="`${'£'.repeat(price)} maximum`"
               class="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
-              :class="maxPrice === price ? 'border-primary bg-primary text-white' : 'border-border bg-bg-secondary text-text-secondary'"
+              :class="maxPrice === price ? 'border-primary bg-primary text-on-primary' : 'border-border bg-bg-secondary text-text-secondary'"
             >
               {{ '£'.repeat(price) }}
             </button>
@@ -180,7 +180,7 @@ function goToRecommendation() {
         <!-- Generate Button -->
         <button
           @click="generateRecommendation"
-          class="w-full py-3 rounded-2xl text-xs font-bold bg-primary hover:bg-primary-hover text-white shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 mt-2"
+          class="w-full py-3 rounded-2xl text-xs font-bold bg-primary hover:bg-primary-hover text-on-primary shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 mt-2"
         >
           <Dices class="w-4 h-4" />
           <span>Pick a place for me!</span>
@@ -192,7 +192,7 @@ function goToRecommendation() {
       <div v-else class="space-y-4 animate-fade-in" aria-live="polite">
         <div class="p-5 rounded-2xl bg-bg-secondary border-2 border-primary space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary text-white">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary text-on-primary">
               Your Perfect Choice
             </span>
             <span class="text-xs font-bold text-primary">
@@ -223,7 +223,7 @@ function goToRecommendation() {
         <div class="flex gap-2">
           <button
             @click="goToRecommendation"
-            class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white shadow-sm transition-all flex items-center justify-center gap-1.5"
+            class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-on-primary shadow-sm transition-all flex items-center justify-center gap-1.5"
           >
             <MapPin class="w-4 h-4" />
             <span>View on map and go</span>

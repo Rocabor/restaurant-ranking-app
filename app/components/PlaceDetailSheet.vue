@@ -177,7 +177,7 @@ function confirmDelete() {
 
           <div class="flex items-center gap-2 mt-2">
             <span
-              class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold text-white"
+              class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold text-text-primary dark:text-white"
               :style="{ backgroundColor: getCuisineColor(place.cuisineGroup) }"
             >
               {{ place.cuisine }}

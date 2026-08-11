@@ -86,8 +86,8 @@ function onKeyDown(e: KeyboardEvent) {
         </button>
         <button
           @click="handleConfirm"
-          class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-          :class="confirmData.variant === 'danger' ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:bg-primary-hover'"
+          class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+          :class="confirmData.variant === 'danger' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-primary hover:bg-primary-hover text-on-primary'"
         >
           {{ confirmData.confirmText || 'Confirm' }}
         </button>

@@ -55,7 +55,7 @@ onMounted(() => {
         :class="ui.mobileView === 'map' ? 'block' : 'hidden md:block'"
       >
         <ClientOnly>
-          <InteractiveMap />
+          <LazyInteractiveMap />
         </ClientOnly>
       </main>
 

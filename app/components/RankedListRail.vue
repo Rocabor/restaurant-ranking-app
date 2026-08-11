@@ -210,7 +210,7 @@ const hasActiveFilters = computed(() => {
           </p>
           <button
             @click="store.clearFilters()"
-            class="px-4 py-1.5 rounded-full text-xs font-semibold bg-primary text-white hover:bg-primary-hover transition-all shadow-sm"
+            class="px-4 py-1.5 rounded-full text-xs font-semibold bg-primary text-on-primary hover:bg-primary-hover transition-all shadow-sm"
           >
             Reset filters
           </button>

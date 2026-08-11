@@ -213,7 +213,7 @@ onUnmounted(() => {
             </button>
             <button
               @click="addWorldPlace(r)"
-              class="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-white text-[10px] font-bold hover:bg-primary-hover transition-colors active:scale-95"
+              class="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-on-primary text-[10px] font-bold hover:bg-primary-hover transition-colors active:scale-95"
               :aria-label="`Add ${r.name} to your places`"
             >
               <Plus class="w-3 h-3" />

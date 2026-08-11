@@ -247,7 +247,7 @@ const onSubmit = handleSubmit(async (formValues) => {
         <button
           type="submit"
           :disabled="isLoading"
-          class="w-full py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-white shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+          class="w-full py-2.5 rounded-xl text-xs font-bold bg-primary hover:bg-primary-hover text-on-primary shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
         >
           <Loader2 v-if="isLoading" class="w-4 h-4 animate-spin" />
           <span>{{ mode === 'login' ? 'Log In to Tastemap' : mode === 'register' ? 'Create Free Account' : 'Send Recovery Email' }}</span>

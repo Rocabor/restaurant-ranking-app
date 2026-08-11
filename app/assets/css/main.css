@@ -1,7 +1,6 @@
 /** app\assets\css\main.css */
 
 @import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
 @import './tailwind.css';
 
 @layer base {

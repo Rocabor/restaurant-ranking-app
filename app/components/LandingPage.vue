@@ -62,7 +62,7 @@ function openPlaceOnMap(id: string) {
         <div class="pt-4 flex flex-wrap items-center justify-center gap-3.5">
           <button
             @click="ui.openModal('auth')"
-            class="px-6 py-3.5 rounded-2xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center gap-2 active:scale-95">
+            class="px-6 py-3.5 rounded-2xl bg-primary hover:bg-primary-hover text-on-primary font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center gap-2 active:scale-95">
             <span>Sign Up Free</span>
             <ChevronRight class="w-4 h-4 opacity-80" />
           </button>
@@ -178,7 +178,7 @@ function openPlaceOnMap(id: string) {
             <p class="text-xs text-text-tertiary font-medium">Here are some of the highest rated places in your collection</p>
           </div>
 
-          <router-link to="/mapa" class="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold w-fit hover:bg-primary-hover transition-all flex items-center gap-1.5">
+          <router-link to="/mapa" class="px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold w-fit hover:bg-primary-hover transition-all flex items-center gap-1.5">
             <span>View full map ({{ store.places?.length || 0 }} restaurants)</span>
             <ChevronRight class="w-3.5 h-3.5" />
           </router-link>
@@ -191,10 +191,9 @@ function openPlaceOnMap(id: string) {
             :key="place.id"
             :to="'/mapa'"
             @click="openPlaceOnMap(place.id)"
-            :aria-label="`View ${place.name} on map`"
             class="p-4 rounded-2xl bg-surface border border-border hover:border-primary focus-visible:border-primary transition-all cursor-pointer shadow-xs space-y-2 group">
             <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-primary text-white">Rank #{{ place.rank }}</span>
+              <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-primary text-on-primary">Rank #{{ place.rank }}</span>
               <span class="text-xs font-bold text-primary">
                 {{ '£'.repeat(place.priceLevel) }}
               </span>
@@ -229,7 +228,7 @@ function openPlaceOnMap(id: string) {
         <div class="flex flex-wrap items-center justify-center gap-3">
           <button
             @click="ui.openModal('auth')"
-            class="px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-2">
+            class="px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-2">
             <span>Sign Up Free</span>
           </button>
 
@@ -250,8 +249,8 @@ function openPlaceOnMap(id: string) {
       <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <!-- Logo / Marca -->
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded-full bg-primary text-white font-serif font-bold text-xs flex items-center justify-center">
-            <MapPin class="w-3 h-3 text-white" />
+          <div class="w-6 h-6 rounded-full bg-primary text-on-primary font-serif font-bold text-xs flex items-center justify-center">
+            <MapPin class="w-3 h-3 text-on-primary" />
           </div>
           <span class="font-serif font-bold text-sm text-text-primary">Tastemap</span>
           <span>— Your personal food journal</span>

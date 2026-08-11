@@ -4,6 +4,7 @@ import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import type { Place } from '~/types';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
 import { Compass, Navigation, MapPin, Plus, Minus } from '@lucide/vue';
 
@@ -188,10 +189,10 @@ function createMarkerIcon(place: Place, isSelected: boolean) {
   const isTopPick = isRanked && place.rank === 1;
 
   const pinClass = isTopPick
-    ? 'tastemap-pin-inner tastemap-pin-top bg-emerald-600 text-white'
+    ? 'tastemap-pin-inner tastemap-pin-top bg-emerald-700 text-white'
     : isRanked
-      ? 'tastemap-pin-inner bg-emerald-600 text-white'
-      : 'tastemap-pin-inner bg-amber-500 text-white';
+      ? 'tastemap-pin-inner bg-emerald-700 text-white'
+      : 'tastemap-pin-inner bg-amber-700 text-white';
 
   const innerContent = isRanked
     ? `<span class="tastemap-pin-num">${place.rank}</span>`
@@ -229,11 +230,12 @@ function createPopupHtml(place: Place) {
   const primary = isDark ? '#34d399' : '#059669';
   const amber = isDark ? '#fbbf24' : '#d97706';
   const amberBg = isDark ? 'rgba(251,191,36,0.15)' : 'rgba(217,119,6,0.08)';
+  const onPrimary = isDark ? '#183a2a' : '#ffffff';
 
   return `
     <div class="tastemap-popup" style="padding:14px;min-width:220px;max-width:260px;font-family:'Switzer',system-ui,sans-serif;background:${bg};color:${textPrimary};border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,${isDark ? '0.5' : '0.12'});">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <span style="padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;${isRanked ? `background:${primary};color:#fff;` : `background:${amberBg};color:${amber};border:1px solid ${border};`}">
+        <span style="padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;${isRanked ? `background:${primary};color:${onPrimary};` : `background:${amberBg};color:${amber};border:1px solid ${border};`}">
           ${isRanked ? `#${place.rank} Ranked` : '★ Want to Try'}
         </span>
         <span style="font-weight:700;font-size:12px;color:${primary};">${priceString}</span>
@@ -254,7 +256,7 @@ function createPopupHtml(place: Place) {
       <div style="display:flex;gap:6px;padding-top:10px;border-top:1px solid ${border};">
         <button data-tastemap-action="open" data-place-id="${id}"
           class="tastemap-popup-btn tastemap-popup-btn-primary"
-          style="flex:1;padding:8px 10px;border-radius:10px;background:${primary};color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;box-shadow:0 2px 8px ${primary}33;">
+          style="flex:1;padding:8px 10px;border-radius:10px;background:${primary};color:${onPrimary};border:none;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;box-shadow:0 2px 8px ${primary}33;">
           View Details
         </button>
         <button data-tastemap-action="duel" data-place-id="${id}"
@@ -348,7 +350,7 @@ function placePinPickMarker(lat: number, lng: number) {
   } else {
     pinPickMarker = L.marker(latLng, {
       icon: L.divIcon({
-        html: '<div class="tastemap-pin"><div class="tastemap-pin-inner tastemap-pin-pick bg-primary text-white"><span class="tastemap-pin-num">●</span></div></div>',
+        html: '<div class="tastemap-pin"><div class="tastemap-pin-inner tastemap-pin-pick bg-primary text-on-primary"><span class="tastemap-pin-num">●</span></div></div>',
         className: 'tastemap-marker-wrapper is-active',
         iconSize: [36, 44],
         iconAnchor: [18, 44]
@@ -417,7 +419,7 @@ function zoomOut() {
         </p>
         <button
           @click="ui.openModal('addPlace')"
-          class="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl active:scale-95"
+          class="px-6 py-3 bg-emerald-700 text-white font-semibold rounded-full hover:bg-emerald-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
         >
           Add your first place
         </button>
@@ -487,7 +489,7 @@ function zoomOut() {
         <button
           @click="ui.confirmPinPick()"
           :disabled="!ui.pinPickCoords"
-          class="px-3 py-1.5 rounded-full bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 transition-all active:scale-95 disabled:opacity-40"
+          class="px-3 py-1.5 rounded-full bg-emerald-700 text-white text-[11px] font-bold hover:bg-emerald-800 transition-all active:scale-95 disabled:opacity-40"
         >
           Use this location
         </button>

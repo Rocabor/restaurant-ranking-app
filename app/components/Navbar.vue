@@ -42,9 +42,8 @@ function goHome() {
         to="/"
         @click="goHome()"
         class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-        aria-label="Tastemap home"
       >
-        <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-lg shadow-sm"><MapPin class="w-4 h-4 text-white" /></div>
+        <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-serif font-bold text-lg shadow-sm"><MapPin class="w-4 h-4 text-on-primary" /></div>
         <div>
           <h1 v-if="!isLanding" class="font-serif font-bold text-xl sm:text-2xl tracking-tight leading-none text-text-primary">
             Tastemap<span class="text-highlight">.</span>
@@ -52,7 +51,7 @@ function goHome() {
           <span v-else class="block font-serif font-bold text-xl sm:text-2xl tracking-tight leading-none text-text-primary">
             Tastemap<span class="text-highlight">.</span>
           </span>
-          <p class="text-[8px] md:text-[11px] text-text-tertiary font-medium">Your personal map & honest ranking</p>
+          <p aria-hidden="true" class="text-[8px] md:text-[11px] text-text-tertiary font-medium">Your personal map & honest ranking</p>
         </div>
       </router-link>
 
@@ -93,7 +92,7 @@ function goHome() {
 
         <div class="relative flex items-center">
           <div v-if="ui.currentUser" class="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-full bg-bg-secondary border border-border text-xs font-semibold">
-            <div class="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[10px] uppercase font-bold">
+            <div class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px] uppercase font-bold">
               {{ ui.currentUser.email.charAt(0) }}
             </div>
             <span class="max-w-25 truncate text-text-primary text-[11px] hidden sm:inline">
@@ -197,7 +196,7 @@ function goHome() {
           <div class="border-t border-border my-1"></div>
 
           <div v-if="ui.currentUser" class="flex items-center gap-3 px-4 py-3">
-            <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs uppercase font-bold">
+            <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs uppercase font-bold">
               {{ ui.currentUser.email.charAt(0) }}
             </div>
             <div class="flex-1 min-w-0">
