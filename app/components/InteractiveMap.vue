@@ -65,7 +65,17 @@ onMounted(() => {
   map = L.map(mapContainer.value, {
     zoomControl: false,
     attributionControl: false
-  }).setView([20, 0], 2);
+  });
+
+  const initialBounds = L.latLngBounds([]);
+  store.filteredPlaces.forEach((p) => {
+    if (p.lat && p.lng) initialBounds.extend([p.lat, p.lng]);
+  });
+  if (initialBounds.isValid()) {
+    map.fitBounds(initialBounds, { padding: [40, 40], maxZoom: 15 });
+  } else {
+    map.setView([20, 0], 2);
+  }
 
   L.control.attribution({ position: 'bottomleft' }).addTo(map);
 

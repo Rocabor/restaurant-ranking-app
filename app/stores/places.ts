@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import type { Place, Comparison, FullPlaceJsonData } from '~/types';
 import { PlaceSchema } from '~/utils/schemas';
-import sampleData from '../../data/sample-places.json';
 
 type Meta = FullPlaceJsonData['meta'];
 type DataSource = 'sample' | 'user';
@@ -156,19 +155,25 @@ export const usePlacesStore = defineStore('places', {
   },
 
   actions: {
-    loadSampleData() {
-      this.loadToken += 1;
+    async loadSampleData() {
+      const token = this.loadToken + 1;
+      this.loadToken = token;
       this.loading = true;
       this.dataSource = 'sample';
-      const result = PlaceSchema.safeParse(sampleData);
-      if (result.success) {
-        this.meta = result.data.meta;
-        this.places = result.data.places;
-        this.comparisons = result.data.comparisons;
-      } else {
-        console.error('Invalid sample data:', result.error);
+      try {
+        const data = (await import('../../data/sample-places.json')).default;
+        if (token !== this.loadToken) return;
+        const result = PlaceSchema.safeParse(data);
+        if (result.success) {
+          this.meta = result.data.meta;
+          this.places = result.data.places;
+          this.comparisons = result.data.comparisons;
+        } else {
+          console.error('Invalid sample data:', result.error);
+        }
+      } finally {
+        if (token === this.loadToken) this.loading = false;
       }
-      this.loading = false;
     },
 
     async loadUserData() {
@@ -182,7 +187,8 @@ export const usePlacesStore = defineStore('places', {
         if (token !== this.loadToken) return;
         this.places = places;
         this.comparisons = comparisons;
-        const result = PlaceSchema.safeParse(sampleData);
+        const data = (await import('../../data/sample-places.json')).default;
+        const result = PlaceSchema.safeParse(data);
         if (result.success) {
           this.meta = result.data.meta;
         }

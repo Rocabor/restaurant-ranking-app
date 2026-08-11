@@ -60,13 +60,13 @@ onMounted(() => {
       </main>
 
       <!-- Detail Sheet -->
-      <PlaceDetailSheet />
+      <LazyPlaceDetailSheet v-if="ui.showDetailSheet" />
     </div>
-    <TasteStatsModal />
-    <DeciderModal />
-    <AuthModal />
-    <PlaceFormModal />
-    <ComparisonDuelModal />
-    <ConfirmModal />
+    <LazyTasteStatsModal v-if="ui.activeModal === 'stats'" />
+    <LazyDeciderModal v-if="ui.activeModal === 'decider'" />
+    <LazyAuthModal v-if="ui.activeModal === 'auth'" />
+    <LazyPlaceFormModal v-if="ui.activeModal === 'addPlace' || ui.activeModal === 'editPlace'" />
+    <LazyComparisonDuelModal v-if="ui.activeModal === 'duel'" />
+    <LazyConfirmModal v-if="ui.activeModal === 'confirm'" />
   </div>
 </template>
