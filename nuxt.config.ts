@@ -3,7 +3,15 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt', '@nuxt/icon'],
+  modules: ['@pinia/nuxt', '@nuxt/icon', '@nuxtjs/supabase'],
+  supabase: {
+    redirect: false,
+    redirectOptions: {
+      login: '/',
+      callback: '/',
+      exclude: [],
+    },
+  },
   icon: {
     serverBundle: 'local',
   },
@@ -13,7 +21,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Tastemap - London Food Map',
+      title: 'Food Journal | Tastemap',
       meta: [{ name: 'description', content: 'Personal London restaurant map with Elo pairwise ranking, curated lists, and taste stats' }],
     },
   },

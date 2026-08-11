@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import { useAuthSession } from './composables/useAuthSession';
+
+const { syncSession } = useAuthSession();
+onMounted(() => {
+  syncSession();
+});
+</script>
+
 <template>
   <div>
     <!-- Skip Link -->

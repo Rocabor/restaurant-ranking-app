@@ -5,15 +5,35 @@ import { ref, watch, computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import type { Place } from '../types';
-import { X, Search } from '@lucide/vue';
+import { X, Search, MapPin } from '@lucide/vue';
 import { useForm, useField } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { placeFormSchema } from '~/utils/schemas';
+import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
 
+const isOpen = computed(() => ui.activeModal === 'addPlace' || ui.activeModal === 'editPlace');
 const isEditing = computed(() => ui.activeModal === 'editPlace');
+
+const modalRef = ref<HTMLElement | null>(null);
+const { activate, deactivate } = useFocusTrap(modalRef);
+
+watch(isOpen, (open) => {
+  if (open) {
+    activate();
+  } else {
+    deactivate();
+  }
+});
+
+function onKeyDown(e: KeyboardEvent) {
+  if (!isOpen.value) return;
+  if (e.key === 'Escape') {
+    ui.closeModal();
+  }
+}
 
 const { handleSubmit, errors, resetForm, setValues, values } = useForm({
   validationSchema: toTypedSchema(placeFormSchema),
@@ -48,6 +68,15 @@ const { value: website, errorMessage: websiteError } = useField<string>('website
 
 const isGeocoding = ref(false);
 
+interface GeocodeResult {
+  lat: number;
+  lng: number;
+  display_name: string;
+}
+
+const geocodeResults = ref<GeocodeResult[]>([]);
+const noGeocodeResults = ref(false);
+
 watch(() => ui.activeModal, (val) => {
   if (val === 'editPlace' && store.editingPlace) {
     setValues({
@@ -64,34 +93,112 @@ watch(() => ui.activeModal, (val) => {
       tags: (store.editingPlace.tags || []).join(', '),
       website: store.editingPlace.website || '',
     });
+    noGeocodeResults.value = false;
+    applyPendingPinCoords();
   } else if (val === 'addPlace') {
-    resetForm();
+    if (ui.placePrefill) {
+      const p = ui.placePrefill;
+      setValues({
+        name: p.name || '',
+        cuisine: p.cuisine || '',
+        specialty: p.specialty || '',
+        area: p.area || '',
+        address: p.address || '',
+        lat: p.lat ?? 51.5155,
+        lng: p.lng ?? -0.098,
+        priceLevel: p.priceLevel || 2,
+        status: p.status || 'want',
+        note: p.note || '',
+        tags: p.tags || '',
+        website: p.website || '',
+      });
+      ui.placePrefill = null;
+    } else {
+      resetForm();
+    }
+    noGeocodeResults.value = false;
+    applyPendingPinCoords();
   }
 });
 
-async function searchGeocode() {
-  if (!address.value && !name.value) return;
-  isGeocoding.value = true;
+function applyPendingPinCoords() {
+  if (!ui.pendingPinCoords) return;
+  const c = ui.pendingPinCoords;
+  setValues({ lat: c.lat, lng: c.lng });
+  ui.pendingPinCoords = null;
+  reverseGeocode(c.lat, c.lng);
+}
 
-  const query = `${name.value || ''} ${address.value || ''} ${area.value || ''}`;
+watch([name, address, area], () => {
+  noGeocodeResults.value = false;
+});
+
+async function searchGeocode() {
+  if (!address.value && !name.value && !area.value) return;
+  isGeocoding.value = true;
+  geocodeResults.value = [];
+  noGeocodeResults.value = false;
+
+  const candidates = Array.from(new Set([
+    [name.value, address.value, area.value].filter(Boolean).join(' '),
+    [name.value, area.value].filter(Boolean).join(' '),
+    name.value,
+    [address.value, area.value].filter(Boolean).join(' '),
+    address.value,
+    area.value,
+  ].map((s) => s.trim()).filter(Boolean)));
 
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-    const data = await res.json();
+    for (const query of candidates) {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&accept-language=en&q=${encodeURIComponent(query)}`);
+      const data = await res.json();
 
-    if (data && data.length > 0) {
-      setValues({
-        lat: parseFloat(data[0].lat),
-        lng: parseFloat(data[0].lon),
-        address: data[0].display_name.split(',').slice(0, 3).join(','),
-      });
-    } else {
-      alert('No coordinates found for that address. You can enter them manually.');
+      if (data && data.length > 0) {
+        geocodeResults.value = data.slice(0, 6).map((r: any) => ({
+          lat: parseFloat(r.lat),
+          lng: parseFloat(r.lon),
+          display_name: r.display_name,
+        }));
+        break;
+      }
+    }
+
+    if (geocodeResults.value.length === 0) {
+      noGeocodeResults.value = true;
     }
   } catch (e) {
     console.error(e);
+    noGeocodeResults.value = true;
   } finally {
     isGeocoding.value = false;
+  }
+}
+
+function applyGeocodeResult(r: GeocodeResult) {
+  setValues({
+    lat: r.lat,
+    lng: r.lng,
+    address: r.display_name.split(',').slice(0, 3).join(','),
+  });
+  geocodeResults.value = [];
+  noGeocodeResults.value = false;
+}
+
+async function reverseGeocode(lat: number, lng: number) {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&accept-language=en`);
+    const data = await res.json();
+    if (data && data.display_name) {
+      const parts = String(data.display_name).split(',').map((s: string) => s.trim()).filter(Boolean);
+      if (!address.value && parts.length > 0) {
+        address.value = parts.slice(0, 3).join(', ');
+      }
+      if (!area.value && parts.length > 3) {
+        area.value = parts[Math.min(3, parts.length - 1)] ?? '';
+      }
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 
@@ -153,7 +260,9 @@ const onSubmit = handleSubmit((formValues) => {
 <template>
   <div
     v-if="ui.activeModal === 'addPlace' || ui.activeModal === 'editPlace'"
+    ref="modalRef"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+    @keydown.window="onKeyDown"
     role="dialog"
     aria-modal="true"
     :aria-labelledby="ui.activeModal === 'addPlace' ? 'add-place-title' : 'edit-place-title'"
@@ -184,12 +293,13 @@ const onSubmit = handleSubmit((formValues) => {
       <form @submit.prevent="onSubmit" class="space-y-4">
 
         <!-- Status Switcher -->
-        <div class="grid grid-cols-2 gap-2 p-1 bg-bg-secondary rounded-2xl border border-border text-xs font-semibold">
+        <div class="grid grid-cols-2 gap-2 p-1 bg-bg-secondary rounded-2xl border border-border text-xs font-semibold" role="group" aria-label="Place status">
           <button
             type="button"
             @click="status = 'want'"
             class="py-2 rounded-xl transition-all flex items-center justify-center gap-1.5"
             :class="status === 'want' ? 'bg-surface text-highlight shadow-sm' : 'text-text-tertiary'"
+            :aria-pressed="status === 'want'"
           >
             <span>★ Want to try</span>
           </button>
@@ -199,6 +309,7 @@ const onSubmit = handleSubmit((formValues) => {
             @click="status = 'ranked'"
             class="py-2 rounded-xl transition-all flex items-center justify-center gap-1.5"
             :class="status === 'ranked' ? 'bg-primary text-on-primary shadow-sm' : 'text-text-tertiary'"
+            :aria-pressed="status === 'ranked'"
           >
             <span>✓ Visited (Rank)</span>
           </button>
@@ -207,41 +318,48 @@ const onSubmit = handleSubmit((formValues) => {
         <!-- Name & Cuisine -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-name" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Restaurant Name *
             </label>
             <input
+              id="place-name"
               v-model="name"
               type="text"
               placeholder="e.g. Brat, Padella..."
+              aria-required="true"
+              :aria-describedby="nameError ? 'place-name-error' : undefined"
               class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
               :class="nameError ? 'border-danger' : 'border-border'"
             />
-            <p v-if="nameError" class="text-[11px] text-danger mt-1">{{ nameError }}</p>
+            <p v-if="nameError" id="place-name-error" class="text-[11px] text-danger mt-1">{{ nameError }}</p>
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-cuisine" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Cuisine Type *
             </label>
             <input
+              id="place-cuisine"
               v-model="cuisine"
               type="text"
               placeholder="e.g. Basque, Italian, Thai..."
+              aria-required="true"
+              :aria-describedby="cuisineError ? 'place-cuisine-error' : undefined"
               class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
               :class="cuisineError ? 'border-danger' : 'border-border'"
             />
-            <p v-if="cuisineError" class="text-[11px] text-danger mt-1">{{ cuisineError }}</p>
+            <p v-if="cuisineError" id="place-cuisine-error" class="text-[11px] text-danger mt-1">{{ cuisineError }}</p>
           </div>
         </div>
 
         <!-- Specialty & Area -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-specialty" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Specialty / Signature Dish
             </label>
             <input
+              id="place-specialty"
               v-model="specialty"
               type="text"
               placeholder="e.g. Wood-grilled fish, Fresh pasta..."
@@ -250,24 +368,27 @@ const onSubmit = handleSubmit((formValues) => {
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-area" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Neighborhood or Area *
             </label>
             <input
+              id="place-area"
               v-model="area"
               type="text"
               placeholder="e.g. Shoreditch, Soho..."
+              aria-required="true"
+              :aria-describedby="areaError ? 'place-area-error' : undefined"
               class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
               :class="areaError ? 'border-danger' : 'border-border'"
             />
-            <p v-if="areaError" class="text-[11px] text-danger mt-1">{{ areaError }}</p>
+            <p v-if="areaError" id="place-area-error" class="text-[11px] text-danger mt-1">{{ areaError }}</p>
           </div>
         </div>
 
         <!-- Address & Geocoding -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary">
+            <label for="place-address" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary">
               Full Address *
             </label>
             <button
@@ -281,48 +402,85 @@ const onSubmit = handleSubmit((formValues) => {
             </button>
           </div>
           <input
+            id="place-address"
             v-model="address"
             type="text"
             placeholder="e.g. 4 Redchurch St, London E1 6JL"
+            aria-required="true"
+            :aria-describedby="addressError ? 'place-address-error' : undefined"
             class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
             :class="addressError ? 'border-danger' : 'border-border'"
           />
-          <p v-if="addressError" class="text-[11px] text-danger mt-1">{{ addressError }}</p>
+          <p v-if="addressError" id="place-address-error" class="text-[11px] text-danger mt-1">{{ addressError }}</p>
+          <p v-else-if="noGeocodeResults" class="text-[11px] text-danger mt-1" role="status">
+            No coordinates found. Try searching only the neighborhood or city, type latitude/longitude below, or place the pin directly on the map.
+          </p>
+
+          <button
+            type="button"
+            @click="ui.startPinPick(isEditing ? 'editPlace' : 'addPlace')"
+            class="mt-2 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-primary/50 text-[11px] font-semibold text-primary hover:bg-primary/5 transition-colors"
+          >
+            <MapPin class="w-3.5 h-3.5" />
+            Place pin directly on the map
+          </button>
+
+          <div
+            v-if="geocodeResults.length > 0"
+            class="mt-2 rounded-xl border border-border bg-surface shadow-lg overflow-hidden"
+            role="listbox"
+            aria-label="Search results — choose the matching place"
+          >
+            <button
+              v-for="(r, i) in geocodeResults"
+              :key="i"
+              type="button"
+              role="option"
+              @click="applyGeocodeResult(r)"
+              class="w-full text-left px-3 py-2 text-[11px] text-text-secondary hover:bg-bg-secondary hover:text-text-primary transition-colors border-b border-border last:border-b-0"
+            >
+              {{ r.display_name }}
+            </button>
+          </div>
         </div>
 
         <!-- Coordinates -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-lat" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Latitude
             </label>
             <input
+              id="place-lat"
               v-model.number="lat"
               type="number"
               step="any"
+              :aria-describedby="latError ? 'place-lat-error' : undefined"
               class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
               :class="latError ? 'border-danger' : 'border-border'"
             />
-            <p v-if="latError" class="text-[11px] text-danger mt-1">{{ latError }}</p>
+            <p v-if="latError" id="place-lat-error" class="text-[11px] text-danger mt-1">{{ latError }}</p>
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-lng" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Longitude
             </label>
             <input
+              id="place-lng"
               v-model.number="lng"
               type="number"
               step="any"
+              :aria-describedby="lngError ? 'place-lng-error' : undefined"
               class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
               :class="lngError ? 'border-danger' : 'border-border'"
             />
-            <p v-if="lngError" class="text-[11px] text-danger mt-1">{{ lngError }}</p>
+            <p v-if="lngError" id="place-lng-error" class="text-[11px] text-danger mt-1">{{ lngError }}</p>
           </div>
         </div>
 
         <!-- Price Level -->
-        <div>
+        <div role="radiogroup" aria-label="Price range">
           <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1.5">
             Price Range
           </label>
@@ -331,6 +489,9 @@ const onSubmit = handleSubmit((formValues) => {
               v-for="level in [1, 2, 3, 4]"
               :key="level"
               type="button"
+              role="radio"
+              :aria-checked="priceLevel === level"
+              :aria-label="`${'£'.repeat(level)} price level`"
               @click="priceLevel = level as 1 | 2 | 3 | 4"
               class="py-2 rounded-xl text-xs font-semibold border transition-all"
               :class="priceLevel === level ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-border bg-bg-secondary text-text-tertiary'"
@@ -342,10 +503,11 @@ const onSubmit = handleSubmit((formValues) => {
 
         <!-- Personal Note -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+          <label for="place-note" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
             Personal Note or Review
           </label>
           <textarea
+            id="place-note"
             v-model="note"
             rows="2"
             placeholder="What did you order? Any recommendations for dishes or reservations?"
@@ -356,10 +518,11 @@ const onSubmit = handleSubmit((formValues) => {
         <!-- Tags & Website -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-tags" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Tags (comma separated)
             </label>
             <input
+              id="place-tags"
               v-model="tags"
               type="text"
               placeholder="e.g. date-night, pasta, walk-ins"
@@ -368,17 +531,19 @@ const onSubmit = handleSubmit((formValues) => {
           </div>
 
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
+            <label for="place-website" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-1">
               Website (Optional)
             </label>
             <input
+              id="place-website"
               v-model="website"
               type="url"
               placeholder="https://..."
+              :aria-describedby="websiteError ? 'place-website-error' : undefined"
               class="w-full px-3.5 py-2 text-xs bg-bg-secondary border rounded-xl focus:outline-none focus:border-primary text-text-primary"
               :class="websiteError ? 'border-danger' : 'border-border'"
             />
-            <p v-if="websiteError" class="text-[11px] text-danger mt-1">{{ websiteError }}</p>
+            <p v-if="websiteError" id="place-website-error" class="text-[11px] text-danger mt-1">{{ websiteError }}</p>
           </div>
         </div>
 

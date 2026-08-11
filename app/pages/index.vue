@@ -22,25 +22,26 @@ onMounted(() => {
   <LandingPage v-if="ui.showLanding" />
 
   <div v-else>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     <Navbar />
     <!-- Mobile Segmented Control — below navbar, full width -->
-    <div class="md:hidden flex p-1 bg-bg-secondary border-b border-border">
+    <div class="md:hidden flex p-1 bg-bg-secondary border-b border-border" role="group" aria-label="Switch between map and list view">
       <button
         @click="ui.setMobileView('map')"
         class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all rounded-lg"
         :class="ui.mobileView === 'map' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+        :aria-pressed="ui.mobileView === 'map'"
       >
         <Map class="w-4 h-4" />
-        <span>Mapa</span>
+        <span>Map</span>
       </button>
       <button
         @click="ui.setMobileView('list')"
         class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all rounded-lg"
         :class="ui.mobileView === 'list' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+        :aria-pressed="ui.mobileView === 'list'"
       >
         <List class="w-4 h-4" />
-        <span>Lista ({{ store.places.length }})</span>
+        <span>List ({{ store.places.length }})</span>
       </button>
     </div>
 

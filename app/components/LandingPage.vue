@@ -7,7 +7,7 @@ import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import Navbar from '../components/Navbar.vue';
 import AuthModal from '../components/AuthModal.vue';
-import { Sparkles, MapPin, Trophy, Dices, Share2, ChevronRight, Utensils } from '@lucide/vue';
+import { Sparkles, MapPin, Trophy, Dices, Star, ChevronRight, Utensils } from '@lucide/vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
@@ -32,6 +32,7 @@ function openPlaceOnMap(id: string) {
     <!-- Top Navbar -->
     <Navbar />
 
+    <main id="main-content" tabindex="-1">
     <!-- Hero Section -->
     <section class="relative pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 overflow-hidden border-b border-border bg-linear-to-b from-surface to-bg-primary">
       <!-- Subtle Background Decorative Blurs -->
@@ -152,15 +153,15 @@ function openPlaceOnMap(id: string) {
           </div>
         </div>
 
-        <!-- Feature 4: Fichas Sociales -->
+        <!-- Feature 4: Lista Want to Try -->
         <div class="p-6 rounded-3xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm space-y-4 group">
           <div class="p-3 rounded-2xl bg-primary-subtle text-primary w-fit">
-            <Share2 class="w-6 h-6" />
+            <Star class="w-6 h-6" />
           </div>
           <div class="space-y-1.5">
-            <h3 class="font-serif font-bold text-xl text-text-primary group-hover:text-primary transition-colors">Sharable Recommendation Cards</h3>
+            <h3 class="font-serif font-bold text-xl text-text-primary group-hover:text-primary transition-colors">Want-to-Try List</h3>
             <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
-              Share recommendations directly in WhatsApp or Telegram groups, or Instagram Stories, with elegantly formatted cards featuring top dishes and notes.
+              Keep a separate list of every place you still want to try. Search and add restaurants from anywhere in the world, then revisit the list when you're hungry for something new.
             </p>
           </div>
         </div>
@@ -185,13 +186,11 @@ function openPlaceOnMap(id: string) {
 
         <!-- Mini Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div
+          <router-link
             v-for="place in topRankedPreview"
             :key="place.id"
+            :to="'/mapa'"
             @click="openPlaceOnMap(place.id)"
-            @keydown.enter="openPlaceOnMap(place.id)"
-            role="button"
-            tabindex="0"
             :aria-label="`View ${place.name} on map`"
             class="p-4 rounded-2xl bg-surface border border-border hover:border-primary focus-visible:border-primary transition-all cursor-pointer shadow-xs space-y-2 group">
             <div class="flex items-center justify-between">
@@ -211,21 +210,20 @@ function openPlaceOnMap(id: string) {
             </p>
 
             <div v-if="place.specialty" class="text-xs text-text-secondary italic bg-bg-secondary p-2 rounded-lg border border-border">⭐ "{{ place.specialty }}"</div>
-          </div>
+          </router-link>
         </div>
       </div>
     </section>
 
     <!-- Bottom CTA Banner -->
-    <section class="py-16 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-6">
-      <div class="p-8 sm:p-12 rounded-3xl bg-surface border border-border shadow-xl space-y-6 relative overflow-hidden">
+    <section class="py-16 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-6">      <div class="p-8 sm:p-12 rounded-3xl bg-surface border border-border shadow-xl space-y-6 relative overflow-hidden">
         <div class="w-12 h-12 rounded-full bg-primary-subtle text-primary flex items-center justify-center mx-auto shadow-sm">
           <Utensils class="w-6 h-6" />
         </div>
 
         <div class="space-y-2 max-w-2xl mx-auto">
           <h2 class="font-serif font-bold text-2xl sm:text-3xl text-text-primary">Ready to build your personal restaurant map?</h2>
-          <p class="text-xs sm:text-sm text-text-secondary">Add your first restaurant, test it in a duel, and share your top discoveries with friends.</p>
+          <p class="text-xs sm:text-sm text-text-secondary">Add your first restaurant, test it in a duel, and build your honest top ranking.</p>
         </div>
 
         <div class="flex flex-wrap items-center justify-center gap-3">
@@ -244,6 +242,8 @@ function openPlaceOnMap(id: string) {
         </div>
       </div>
     </section>
+
+    </main>
 
     <!-- Footer -->
     <footer class="mt-auto py-6 border-t border-border bg-surface text-center text-xs text-text-tertiary font-medium">

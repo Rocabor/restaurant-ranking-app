@@ -17,7 +17,6 @@ onMounted(() => {
 
 <template>
   <div>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     <Navbar />
     <!-- Mobile Segmented Control — below navbar, full width -->
     <div class="md:hidden flex p-1 bg-bg-secondary border-b border-border">

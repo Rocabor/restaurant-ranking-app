@@ -1,13 +1,34 @@
 <!--* app\components\TasteStatsModal.vue  -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import { BarChart3, X, Trophy, Award } from '@lucide/vue';
+import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
+
+const isOpen = computed(() => ui.activeModal === 'stats');
+
+const modalRef = ref<HTMLElement | null>(null);
+const { activate, deactivate } = useFocusTrap(modalRef);
+
+watch(isOpen, (open) => {
+  if (open) {
+    activate();
+  } else {
+    deactivate();
+  }
+});
+
+function onKeyDown(e: KeyboardEvent) {
+  if (!isOpen.value) return;
+  if (e.key === 'Escape') {
+    ui.closeModal();
+  }
+}
 
 const topPick = computed(() => {
   return store.rankedPlaces.find(p => p.rank === 1) || null;
@@ -23,7 +44,7 @@ const explorationRate = computed(() => {
 });
 
 const averagePriceString = computed(() => {
-  if (store.places.length === 0) return '££';
+  if (store.places.length === 0) return '£'.repeat(2);
   const total = store.places.reduce((acc, p) => acc + (p.priceLevel || 2), 0);
   const avg = Math.round(total / store.places.length);
   return '£'.repeat(Math.max(1, Math.min(4, avg)));
@@ -116,7 +137,9 @@ function filterByArea(areaName: string) {
 <template>
   <div
     v-if="ui.activeModal === 'stats'"
+    ref="modalRef"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    @keydown.window="onKeyDown"
     role="dialog"
     aria-modal="true"
     aria-labelledby="stats-title"
@@ -259,6 +282,7 @@ function filterByArea(areaName: string) {
               :key="item.name"
               @click="filterByCuisine(item.name)"
               @keydown.enter="filterByCuisine(item.name)"
+              @keydown.space.prevent="filterByCuisine(item.name)"
               role="button"
               tabindex="0"
               :aria-label="`Filter by ${item.name}`"
@@ -291,6 +315,7 @@ function filterByArea(areaName: string) {
               :key="item.name"
               @click="filterByArea(item.name)"
               @keydown.enter="filterByArea(item.name)"
+              @keydown.space.prevent="filterByArea(item.name)"
               role="button"
               tabindex="0"
               :aria-label="`Filter by ${item.name}`"

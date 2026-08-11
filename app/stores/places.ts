@@ -4,6 +4,7 @@ import { PlaceSchema } from '~/utils/schemas';
 import sampleData from '../../data/sample-places.json';
 
 type Meta = FullPlaceJsonData['meta'];
+type DataSource = 'sample' | 'user';
 type SortOption = 'rank' | 'name' | 'dateAdded' | 'visits' | 'priceLevel';
 
 interface BinaryInsertionState {
@@ -22,6 +23,7 @@ interface PlacesState {
   places: Place[];
   comparisons: Comparison[];
   loading: boolean;
+  dataSource: DataSource;
   sortBy: SortOption;
   selectedStatus: 'all' | 'ranked' | 'want';
   selectedCuisine: string;
@@ -41,6 +43,7 @@ export const usePlacesStore = defineStore('places', {
     places: [],
     comparisons: [],
     loading: false,
+    dataSource: 'sample',
     sortBy: 'rank',
     selectedStatus: 'all',
     selectedCuisine: 'all',
@@ -151,8 +154,9 @@ export const usePlacesStore = defineStore('places', {
   },
 
   actions: {
-    loadData() {
+    loadSampleData() {
       this.loading = true;
+      this.dataSource = 'sample';
       // Simulate async load for demo
       setTimeout(() => {
         const result = PlaceSchema.safeParse(sampleData);
@@ -164,11 +168,80 @@ export const usePlacesStore = defineStore('places', {
           console.error('Invalid sample data:', result.error);
         }
         this.loading = false;
-      }, 500);
+      }, 300);
+    },
+
+    async loadUserData() {
+      this.loading = true;
+      this.dataSource = 'user';
+      try {
+        const { loadPlaces } = useSupabaseData();
+        const { places, comparisons } = await loadPlaces();
+        this.places = places;
+        this.comparisons = comparisons;
+        const result = PlaceSchema.safeParse(sampleData);
+        if (result.success) {
+          this.meta = result.data.meta;
+        }
+      } catch (err) {
+        console.error('Failed to load user data:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    loadData() {
+      const user = useSupabaseUser();
+      if (user.value) {
+        this.loadUserData();
+      } else {
+        this.loadSampleData();
+      }
+    },
+
+    async syncPlace(place: Place) {
+      if (this.dataSource !== 'user') return;
+      try {
+        const { upsertPlace } = useSupabaseData();
+        await upsertPlace(place);
+      } catch (err) {
+        console.error('Failed to sync place:', err);
+      }
+    },
+
+    async syncPlaces(places: Place[]) {
+      if (this.dataSource !== 'user' || places.length === 0) return;
+      try {
+        const { upsertPlaces } = useSupabaseData();
+        await upsertPlaces(places);
+      } catch (err) {
+        console.error('Failed to sync places:', err);
+      }
+    },
+
+    async syncComparison(comparison: Comparison) {
+      if (this.dataSource !== 'user') return;
+      try {
+        const { insertComparison } = useSupabaseData();
+        await insertComparison(comparison);
+      } catch (err) {
+        console.error('Failed to sync comparison:', err);
+      }
+    },
+
+    async syncDeletePlace(id: string) {
+      if (this.dataSource !== 'user') return;
+      try {
+        const { deletePlace } = useSupabaseData();
+        await deletePlace(id);
+      } catch (err) {
+        console.error('Failed to delete place:', err);
+      }
     },
 
     addPlace(place: Place) {
       this.places.push(place);
+      this.syncPlace(place);
     },
 
     updatePlace(id: string, updates: Partial<Omit<Place, 'id'>>) {
@@ -179,11 +252,14 @@ export const usePlacesStore = defineStore('places', {
           Object.entries(updates).filter(([, v]) => v !== undefined),
         ) as Partial<Omit<Place, 'id'>>;
         this.places[index] = { ...current, ...filtered } as Place;
+        this.syncPlace(this.places[index]);
       }
     },
 
     removePlace(id: string) {
       this.places = this.places.filter((p) => p.id !== id);
+      this.comparisons = this.comparisons.filter((c) => c.aId !== id && c.bId !== id);
+      this.syncDeletePlace(id);
     },
 
     clearFilters() {
@@ -219,6 +295,7 @@ export const usePlacesStore = defineStore('places', {
         place.status = 'ranked';
         place.visits = 1;
         this.startBinaryInsertion(id);
+        this.syncPlace(place);
         if (openDuelModal && this.rankedPlaces.length > 1) {
           openDuelModal();
         }
@@ -227,6 +304,8 @@ export const usePlacesStore = defineStore('places', {
         place.rank = null;
         place.visits = 0;
         this.recalculateRanks();
+        this.syncPlace(place);
+        this.syncPlaces(this.rankedPlaces);
       }
     },
 
@@ -262,7 +341,7 @@ export const usePlacesStore = defineStore('places', {
           mid: 0,
           questionCount: 1,
           totalEstimate: 1,
-          currentOpponentId: rankedPlaces[0].id,
+          currentOpponentId: rankedPlaces[0]!.id,
         };
         return;
       }
@@ -280,7 +359,7 @@ export const usePlacesStore = defineStore('places', {
         mid,
         questionCount: 1,
         totalEstimate,
-        currentOpponentId: rankedPlaces[mid].id,
+        currentOpponentId: rankedPlaces[mid]!.id,
       };
     },
 
@@ -299,6 +378,7 @@ export const usePlacesStore = defineStore('places', {
         date: new Date().toISOString()
       };
       this.comparisons.push(comparison);
+      this.syncComparison(comparison);
 
       if (choice === 'tie') {
         this.finishBinaryInsertion(newPlaceId, mid + 1);
@@ -330,7 +410,7 @@ export const usePlacesStore = defineStore('places', {
       const newMid = Math.floor((newLow + newHigh) / 2);
       this.binaryInsertion.mid = newMid;
       this.binaryInsertion.questionCount = questionCount + 1;
-      this.binaryInsertion.currentOpponentId = rankedPlaces[newMid].id;
+      this.binaryInsertion.currentOpponentId = rankedPlaces[newMid]!.id;
     },
 
     finishBinaryInsertion(newPlaceId: string, insertAtRank: number) {
@@ -339,6 +419,7 @@ export const usePlacesStore = defineStore('places', {
 
       newPlace.rank = insertAtRank + 1;
       this.recalculateRanks();
+      this.syncPlaces(this.rankedPlaces);
 
       this.binaryInsertion = {
         isPlacing: false,

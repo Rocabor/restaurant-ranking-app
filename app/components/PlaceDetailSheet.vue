@@ -37,18 +37,18 @@ function formatDate(dateStr: string) {
 
 function getCuisineColor(group: string) {
   const map: Record<string, string> = {
-    british: '#1d4ed8',
-    spanish: '#dc2626',
-    italian: '#16a34a',
-    european: '#7c3aed',
-    thai: '#ea580c',
-    indian: '#ca8a04',
-    easian: '#0891b2',
-    mideast: '#9333ea',
-    african: '#059669',
-    seafood: '#0284c7'
+    british: '#1e40af',
+    spanish: '#b91c1c',
+    italian: '#15803d',
+    european: '#6d28d9',
+    thai: '#c2410c',
+    indian: '#a16207',
+    easian: '#0e7490',
+    mideast: '#7e22ce',
+    african: '#047857',
+    seafood: '#0369a1'
   };
-  return map[group] || '#6b7280';
+  return map[group] || '#4b5563';
 }
 
 function incrementVisit() {
@@ -123,6 +123,7 @@ function confirmDelete() {
     ref="sheetRef"
     class="detail-panel shrink-0 bg-surface border-l border-border shadow-2xl flex flex-col overflow-hidden h-full"
     :class="{ 'is-open': isVisible }"
+    @keydown.window="onKeyDown"
     role="dialog"
     aria-modal="true"
     :aria-label="place ? `Details for ${place.name}` : 'Place details'"

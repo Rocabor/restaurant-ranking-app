@@ -56,6 +56,30 @@
   .skip-link:focus {
     top: 0;
   }
+
+  /* Native selects & dropdowns follow the theme (no white popup) */
+  select {
+    color-scheme: light;
+  }
+
+  select option,
+  optgroup {
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+
+  [data-theme='dark'] select {
+    color-scheme: dark;
+  }
+
+  /* Hide the native WebKit cancel button on search inputs (we render our own) */
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-decoration,
+  input[type='search']::-webkit-search-results-button,
+  input[type='search']::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 
 /* Leaflet Map Pins */
@@ -128,6 +152,14 @@
 
 .dark .tastemap-marker-wrapper.is-active .tastemap-pin-inner {
   border-color: #fbbf24;
+}
+
+.tastemap-marker-wrapper.is-active .tastemap-pin-pick {
+  border-color: #ffffff;
+}
+
+.dark .tastemap-marker-wrapper.is-active .tastemap-pin-pick {
+  border-color: #ffffff;
 }
 
 .tastemap-marker-wrapper.is-active .tastemap-pin {

@@ -1,18 +1,39 @@
 <!--* app/components/DeciderModal.vue -->
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { usePlacesStore } from '../stores/places';
 import { useUIStore } from '../stores/ui';
 import type { Place } from '~/types';
 import { Sparkles, X, Dices, MapPin, RotateCw } from '@lucide/vue';
+import { useFocusTrap } from '../composables/useFocusTrap';
 
 const store = usePlacesStore();
 const ui = useUIStore();
 
+const isOpen = computed(() => ui.activeModal === 'decider');
+
 const mood = ref<'ranked' | 'want' | 'any'>('any');
 const maxPrice = ref<number | null>(null);
 const recommendation = ref<Place | null>(null);
+
+const modalRef = ref<HTMLElement | null>(null);
+const { activate, deactivate } = useFocusTrap(modalRef);
+
+watch(isOpen, (open) => {
+  if (open) {
+    activate();
+  } else {
+    deactivate();
+  }
+});
+
+function onKeyDown(e: KeyboardEvent) {
+  if (!isOpen.value) return;
+  if (e.key === 'Escape') {
+    ui.closeModal();
+  }
+}
 
 function generateRecommendation() {
   let candidates = store.places;
@@ -47,7 +68,9 @@ function goToRecommendation() {
 <template>
   <div
     v-if="ui.activeModal === 'decider'"
+    ref="modalRef"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    @keydown.window="onKeyDown"
     role="dialog"
     aria-modal="true"
     aria-labelledby="decider-title"
@@ -84,12 +107,14 @@ function goToRecommendation() {
 
         <!-- Mood Selector -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-2">
+          <label id="decider-mood-label" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-2">
             What are you in the mood for?
           </label>
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-labelledby="decider-mood-label">
             <button
               @click="mood = 'ranked'"
+              role="radio"
+              :aria-checked="mood === 'ranked'"
               class="p-3 rounded-2xl border text-left transition-all"
               :class="mood === 'ranked' ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-border bg-bg-secondary text-text-secondary'"
             >
@@ -99,6 +124,8 @@ function goToRecommendation() {
 
             <button
               @click="mood = 'want'"
+              role="radio"
+              :aria-checked="mood === 'want'"
               class="p-3 rounded-2xl border text-left transition-all"
               :class="mood === 'want' ? 'border-highlight-strong bg-highlight/20 text-highlight-strong font-bold' : 'border-border bg-bg-secondary text-text-secondary'"
             >
@@ -108,6 +135,8 @@ function goToRecommendation() {
 
             <button
               @click="mood = 'any'"
+              role="radio"
+              :aria-checked="mood === 'any'"
               class="p-3 rounded-2xl border text-left transition-all"
               :class="mood === 'any' ? 'border-primary bg-primary/10 text-primary font-bold' : 'border-border bg-bg-secondary text-text-secondary'"
             >
@@ -119,12 +148,14 @@ function goToRecommendation() {
 
         <!-- Optional Price Limit -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-2">
+          <label id="decider-price-label" class="block text-xs font-bold uppercase tracking-wider text-text-tertiary mb-2">
             Maximum budget
           </label>
-          <div class="flex gap-2">
+          <div class="flex gap-2" role="radiogroup" aria-labelledby="decider-price-label">
             <button
               @click="maxPrice = null"
+              role="radio"
+              :aria-checked="maxPrice === null"
               class="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
               :class="maxPrice === null ? 'border-primary bg-primary text-white' : 'border-border bg-bg-secondary text-text-secondary'"
             >
@@ -135,6 +166,9 @@ function goToRecommendation() {
               v-for="price in [1, 2, 3, 4]"
               :key="price"
               @click="maxPrice = price"
+              role="radio"
+              :aria-checked="maxPrice === price"
+              :aria-label="`${'£'.repeat(price)} maximum`"
               class="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
               :class="maxPrice === price ? 'border-primary bg-primary text-white' : 'border-border bg-bg-secondary text-text-secondary'"
             >
@@ -155,7 +189,7 @@ function goToRecommendation() {
       </div>
 
       <!-- Recommendation Result Card -->
-      <div v-else class="space-y-4 animate-fade-in">
+      <div v-else class="space-y-4 animate-fade-in" aria-live="polite">
         <div class="p-5 rounded-2xl bg-bg-secondary border-2 border-primary space-y-3">
           <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary text-white">

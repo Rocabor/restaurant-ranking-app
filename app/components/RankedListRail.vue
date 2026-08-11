@@ -7,9 +7,28 @@ import { useUIStore } from '../stores/ui';
 import PlaceCard from './PlaceCard.vue';
 import LoadingSkeleton from './LoadingSkeleton.vue';
 import { Utensils } from '@lucide/vue';
+import type { SelectOption } from './SelectDropdown.vue';
 
 const store = usePlacesStore();
 const ui = useUIStore();
+
+const sortOptions: SelectOption[] = [
+  { value: 'rank', label: 'Sort: Rank' },
+  { value: 'name', label: 'Sort: Name' },
+  { value: 'dateAdded', label: 'Sort: Recent' },
+  { value: 'visits', label: 'Sort: Visits' },
+  { value: 'priceLevel', label: 'Sort: Price' },
+];
+
+const cuisineOptions = computed<SelectOption[]>(() => [
+  { value: 'all', label: `All Cuisines (${store.places.length})` },
+  ...store.allCuisines.map((c) => ({ value: c, label: c })),
+]);
+
+const cuisineOptionsMobile = computed<SelectOption[]>(() => [
+  { value: 'all', label: 'All Cuisines' },
+  ...store.allCuisines.map((c) => ({ value: c, label: c })),
+]);
 
 const hasActiveFilters = computed(() => {
   return Boolean(
@@ -25,13 +44,14 @@ const hasActiveFilters = computed(() => {
 
 <template>
   <!-- Rail Container -->
-  <div
+  <aside
     class="
       flex flex-col h-full bg-bg-primary border-r border-border
       md:relative z-50 md:z-auto
       inset-y-0 left-0
       w-full md:w-75 xl:w-90
     "
+    aria-label="Ranked list of places"
   >
 
     <!-- Header Controls (desktop) -->
@@ -49,24 +69,21 @@ const hasActiveFilters = computed(() => {
         </div>
 
         <!-- Sort Select -->
-        <select
+        <SelectDropdown
           v-model="store.sortBy"
-          class="text-xs bg-bg-secondary text-text-secondary border border-border rounded-lg px-2.5 py-1 font-medium focus:outline-none focus:border-primary cursor-pointer"
-        >
-          <option value="rank">Sort: Rank</option>
-          <option value="name">Sort: Name</option>
-          <option value="dateAdded">Sort: Recent</option>
-          <option value="visits">Sort: Visits</option>
-          <option value="priceLevel">Sort: Price</option>
-        </select>
+          :options="sortOptions"
+          aria-label="Sort places by"
+          size="sm"
+        />
       </div>
 
       <!-- Segmented Status Tabs -->
-      <div class="grid grid-cols-3 p-1 bg-bg-secondary rounded-xl border border-border text-xs font-semibold">
+      <div class="grid grid-cols-3 p-1 bg-bg-secondary rounded-xl border border-border text-xs font-semibold" role="group" aria-label="Filter by status">
         <button
           @click="store.selectedStatus = 'all'"
           class="py-1.5 rounded-lg transition-all"
           :class="store.selectedStatus === 'all' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+          :aria-pressed="store.selectedStatus === 'all'"
         >
           All ({{ store.places.length }})
         </button>
@@ -74,6 +91,7 @@ const hasActiveFilters = computed(() => {
           @click="store.selectedStatus = 'ranked'"
           class="py-1.5 rounded-lg transition-all flex items-center justify-center gap-1"
           :class="store.selectedStatus === 'ranked' ? 'bg-surface text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+          :aria-pressed="store.selectedStatus === 'ranked'"
         >
           <span>Visited</span>
           <span class="text-[10px] bg-primary/10 text-primary px-1.5 py-0.2 rounded-full font-bold">
@@ -84,6 +102,7 @@ const hasActiveFilters = computed(() => {
           @click="store.selectedStatus = 'want'"
           class="py-1.5 rounded-lg transition-all flex items-center justify-center gap-1"
           :class="store.selectedStatus === 'want' ? 'bg-surface text-highlight-strong shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+          :aria-pressed="store.selectedStatus === 'want'"
         >
           <span>To Try</span>
           <span class="text-[10px] bg-highlight/20 text-highlight-strong px-1.5 py-0.2 rounded-full font-bold">
@@ -94,22 +113,17 @@ const hasActiveFilters = computed(() => {
 
       <!-- Cuisine Filter -->
       <div>
-        <label class="block text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-1.5">
+        <label for="rail-cuisine-filter" class="block text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-1.5">
           Cuisine
         </label>
-        <select
+        <SelectDropdown
+          id="rail-cuisine-filter"
           v-model="store.selectedCuisine"
-          class="w-full text-xs bg-bg-secondary text-text-secondary border border-border rounded-lg px-2.5 py-1.5 font-medium focus:outline-none focus:border-primary cursor-pointer"
-        >
-          <option value="all">All Cuisines ({{ store.places.length }})</option>
-          <option
-            v-for="cuisine in store.allCuisines"
-            :key="cuisine"
-            :value="cuisine"
-          >
-            {{ cuisine }}
-          </option>
-        </select>
+          :options="cuisineOptions"
+          aria-label="Filter by cuisine"
+          size="md"
+          block
+        />
       </div>
 
     </div>
@@ -117,36 +131,30 @@ const hasActiveFilters = computed(() => {
     <!-- Mobile Sort & Filters (simplified) -->
     <div class="p-3 border-b border-border bg-surface space-y-3 md:hidden">
       <div class="flex items-center gap-2">
-        <select
+        <SelectDropdown
           v-model="store.sortBy"
-          class="flex-1 text-xs bg-bg-secondary text-text-secondary border border-border rounded-lg px-2.5 py-2 font-medium focus:outline-none focus:border-primary cursor-pointer"
-        >
-          <option value="rank">Sort: Rank</option>
-          <option value="name">Sort: Name</option>
-          <option value="dateAdded">Sort: Recent</option>
-          <option value="visits">Sort: Visits</option>
-          <option value="priceLevel">Sort: Price</option>
-        </select>
-        <select
+          :options="sortOptions"
+          aria-label="Sort places by"
+          size="md"
+          block
+          class="flex-1 min-w-0"
+        />
+        <SelectDropdown
           v-model="store.selectedCuisine"
-          class="flex-1 text-xs bg-bg-secondary text-text-secondary border border-border rounded-lg px-2.5 py-2 font-medium focus:outline-none focus:border-primary cursor-pointer"
-        >
-          <option value="all">All Cuisines</option>
-          <option
-            v-for="cuisine in store.allCuisines"
-            :key="cuisine"
-            :value="cuisine"
-          >
-            {{ cuisine }}
-          </option>
-        </select>
+          :options="cuisineOptionsMobile"
+          aria-label="Filter by cuisine"
+          size="md"
+          block
+          class="flex-1 min-w-0"
+        />
       </div>
 
-      <div class="grid grid-cols-3 p-1 bg-bg-secondary rounded-xl border border-border text-xs font-semibold">
+      <div class="grid grid-cols-3 p-1 bg-bg-secondary rounded-xl border border-border text-xs font-semibold" role="group" aria-label="Filter by status">
         <button
           @click="store.selectedStatus = 'all'"
           class="py-1.5 rounded-lg transition-all"
           :class="store.selectedStatus === 'all' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+          :aria-pressed="store.selectedStatus === 'all'"
         >
           All
         </button>
@@ -154,6 +162,7 @@ const hasActiveFilters = computed(() => {
           @click="store.selectedStatus = 'ranked'"
           class="py-1.5 rounded-lg transition-all"
           :class="store.selectedStatus === 'ranked' ? 'bg-surface text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+          :aria-pressed="store.selectedStatus === 'ranked'"
         >
           Visited
         </button>
@@ -161,6 +170,7 @@ const hasActiveFilters = computed(() => {
           @click="store.selectedStatus = 'want'"
           class="py-1.5 rounded-lg transition-all"
           :class="store.selectedStatus === 'want' ? 'bg-surface text-highlight-strong shadow-sm' : 'text-text-tertiary hover:text-text-primary'"
+          :aria-pressed="store.selectedStatus === 'want'"
         >
           To Try
         </button>
@@ -176,7 +186,7 @@ const hasActiveFilters = computed(() => {
       <template v-else>
         <!-- Active Filter Pill Bar (if filtering) -->
         <div v-if="hasActiveFilters" class="flex items-center justify-between bg-bg-secondary border border-border rounded-xl px-3 py-1.5 text-xs text-text-secondary">
-          <span>
+          <span aria-live="polite">
             Showing {{ store.filteredPlaces.length }} of {{ store.places.length }} places
           </span>
           <button
@@ -207,14 +217,16 @@ const hasActiveFilters = computed(() => {
         </div>
 
         <!-- List Cards -->
-        <PlaceCard
-          v-for="place in store.filteredPlaces"
-          :key="place.id"
-          :place="place"
-        />
+        <ol class="space-y-3 list-none p-0 m-0">
+          <PlaceCard
+            v-for="place in store.filteredPlaces"
+            :key="place.id"
+            :place="place"
+          />
+        </ol>
       </template>
 
     </div>
 
-  </div>
+  </aside>
 </template>
