@@ -50,7 +50,7 @@ watch(query, (q) => {
   isSearching.value = true;
   debounceTimer = setTimeout(async () => {
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=en&q=${encodeURIComponent(trimmed)}`);
+      const res = await fetch(`/api/nominatim/search?limit=5&accept-language=en&q=${encodeURIComponent(trimmed)}`);
       const data = await res.json();
       worldResults.value = (data || []).map((r: any) => ({
         lat: parseFloat(r.lat),

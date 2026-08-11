@@ -3,6 +3,12 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  $production: {
+    devtools: { enabled: false },
+  },
+  runtimeConfig: {
+    nominatimContactEmail: '',
+  },
   modules: ['@pinia/nuxt', '@nuxt/icon', '@nuxtjs/supabase'],
   supabase: {
     redirect: false,

@@ -150,7 +150,7 @@ async function searchGeocode() {
 
   try {
     for (const query of candidates) {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&accept-language=en&q=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/nominatim/search?limit=6&accept-language=en&q=${encodeURIComponent(query)}`);
       const data = await res.json();
 
       if (data && data.length > 0) {
@@ -186,7 +186,7 @@ function applyGeocodeResult(r: GeocodeResult) {
 
 async function reverseGeocode(lat: number, lng: number) {
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&accept-language=en`);
+    const res = await fetch(`/api/nominatim/reverse?lat=${lat}&lon=${lng}&zoom=18&accept-language=en`);
     const data = await res.json();
     if (data && data.display_name) {
       const parts = String(data.display_name).split(',').map((s: string) => s.trim()).filter(Boolean);
