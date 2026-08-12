@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     nominatimContactEmail: '',
   },
-  modules: ['@pinia/nuxt', '@nuxt/icon', '@nuxtjs/supabase'],
+  modules: ['@pinia/nuxt', '@nuxt/icon', '@nuxtjs/supabase','@vercel/analytics'],
   supabase: {
     redirect: false,
     redirectOptions: {

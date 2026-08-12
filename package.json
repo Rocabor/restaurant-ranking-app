@@ -16,6 +16,7 @@
     "@pinia/nuxt": "^1.0.1",
     "@vee-validate/nuxt": "^4.15.1",
     "@vee-validate/zod": "^4.15.1",
+    "@vercel/analytics": "^2.0.1",
     "@vueuse/nuxt": "^14.4.0",
     "canvas-confetti": "^1.9.4",
     "leaflet": "^1.9.4",
