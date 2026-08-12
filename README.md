@@ -1,10 +1,10 @@
-# Tastemap — Rocabor
+# Tastemap — @Rocabor
 
 A personal, honestly-ranked map of everywhere I've eaten — every place as a pin, ranked head-to-head instead of by star ratings.
 
 **Challenge:** [Tastemap on Frontend Mentor](https://www.frontendmentor.io/challenges/restaurant-ranking-app)
 
-**Live URL:** https://tastemap-khaki.vercel.app
+**Live URL:** https://tastemap-web.vercel.app
 
 ![Tastemap map and ranked list](./screenshot.png)
 
